@@ -2,5 +2,5 @@
 
 A student made replica of the Android 11 Easter Egg Cat game
 
-**Name:** Kelvin Ngo  &nbsp;&nbsp;&nbsp; **GroupNum:** 40 &nbsp;&nbsp;&nbsp; **ProjectName:** Android 11 Easter Egg Cat Game          
+**Name:** Kelvin Ngo  &nbsp; &nbsp; &nbsp; **GroupNum:** 40 &nbsp; &nbsp; &nbsp; **ProjectName:** Android 11 Easter Egg Cat Game          
 
