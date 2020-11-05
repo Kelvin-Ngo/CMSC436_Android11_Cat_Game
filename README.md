@@ -1,4 +1,4 @@
 # CMSC436_Android11_Cat_Game
 A student made replica of the Android 11 Easter Egg Cat game
 
-Name: Kelvin Ngo display(Label("a        b"))              GroupNum: 40                ProjectName: Android 11 Easter Egg Cat Game          
+Name: Kelvin Ngo \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0b GroupNum: 40                ProjectName: Android 11 Easter Egg Cat Game          
