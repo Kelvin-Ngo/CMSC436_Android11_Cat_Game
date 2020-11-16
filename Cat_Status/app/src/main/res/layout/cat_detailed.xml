@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/HungerTitle"
+        android:layout_width="105dp"
+        android:layout_height="30dp"
+        android:text="HEALTH: "
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/hungerPercent"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:hint="DIsplay hunger as current hunger / max hunger"
+        app:layout_constraintLeft_toRightOf="@id/HungerTitle"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/ThirstTitle"
+        android:layout_width="105dp"
+        android:layout_height="30dp"
+        android:text="THIRST: "
+        android:textSize="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/HungerTitle"
+        app:layout_constraintStart_toStartOf="parent"
+
+        />
+
+    <TextView
+        android:id="@+id/thirstPercent"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:hint="Display thrist as current thirst/ max thrist"
+        app:layout_constraintLeft_toRightOf="@id/ThirstTitle"
+        app:layout_constraintTop_toBottomOf="@id/HungerTitle"
+        />
+
+    <TextView
+        android:id="@+id/BoredomTitle"
+        android:layout_width="105dp"
+        android:layout_height="30dp"
+        android:text="BOREDOM: "
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ThirstTitle"
+        />
+
+    <TextView
+        android:id="@+id/boredomPercent"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:hint="Boredom = curr boredom / max boredom"
+        app:layout_constraintTop_toBottomOf="@id/ThirstTitle"
+        app:layout_constraintLeft_toRightOf="@id/BoredomTitle"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
