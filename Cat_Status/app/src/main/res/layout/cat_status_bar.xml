@@ -7,129 +7,41 @@
     >
 
 
-    <TextView
+    <ImageView
         android:id="@+id/catStatusView"
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="169dp"
+        android:layout_height="165dp"
         android:layout_marginLeft="1dp"
+        android:layout_marginTop="40dp"
         android:layout_marginRight="1dp"
-        android:background="@drawable/background_cat_status"
-        />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:id="@+id/hungerBar"
-        android:layout_width="250dp"
-        android:layout_height="18dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginRight="7dp"
-        android:layout_marginLeft="70dp"
-        android:layout_alignLeft="@+id/hungerName"
-        android:layout_alignRight="@+id/catStatusView"
-        android:background="#A32727"
-        android:progressTint="#FF0000"
-        android:textStyle="bold"
-        android:progress="50"
-        />
-
-    <TextView
-        android:id="@+id/hungerName"
-        android:layout_width="70dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="28dp"
-        android:text="HUNGER"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:background="#ED4040"
-        />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:id="@+id/thirstBar"
-        android:layout_width="250dp"
-        android:layout_height="18dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginRight="7dp"
-        android:layout_marginLeft="70dp"
-        android:layout_alignLeft="@+id/thirstName"
-        android:layout_alignRight="@+id/catStatusView"
-        android:background="#4244A5"
-        android:progress="50"
-        android:progressTint="#00A6FF"
-
-
-        />
-
-    <TextView
-        android:id="@+id/thirstName"
-        android:layout_width="70dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="48dp"
-        android:text="THIRST"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:background="#6366F6"
-        />
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:id="@+id/boredomBar"
-        android:layout_width="match_parent"
-        android:layout_alignRight="@id/catStatusView"
-        android:layout_height="18dp"
-        android:layout_marginTop="68dp"
-        android:layout_alignLeft="@id/boredomName"
-        android:layout_marginRight="7dp"
-        android:layout_marginLeft="70dp"
-        android:background="#AC9A29"
-        android:textStyle="bold"
-        android:progress="50"
-        android:progressTint="#FFE600"
-
-
-        />
-
-    <TextView
-        android:id="@+id/boredomName"
-        android:layout_width="70dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="68dp"
-        android:text="BOREDOM"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:background="#F4DB3B"
-        />
+        android:background="@drawable/background_cat_status" />
 
     <View
         android:id="@+id/catPortrait"
-        android:layout_width="77dp"
-        android:layout_height="75dp"
+        android:layout_width="165dp"
+        android:layout_height="158dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/cat_image_area" />
 
-    <Button
+    <ImageView
         android:id="@+id/catIcon"
-        android:layout_width="61dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/ic_caticon" />
+        android:layout_width="118dp"
+        android:layout_height="131dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="55dp" />
 
     <TextView
         android:id="@+id/catName"
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_width="171dp"
+        android:layout_height="40dp"
         android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
         android:layout_marginTop="1dp"
-        android:textStyle="bold"
+        android:layout_marginRight="1dp"
         android:background="@drawable/catname"
+        android:hint="      Cat's Name"
         android:textColor="#000000"
-        android:hint="      Cat's Name" />
+        android:textStyle="bold" />
 
 
 </RelativeLayout>

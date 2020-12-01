@@ -1,24 +1,35 @@
 package com.example.cat_status
 
 import android.content.Context
-import android.content.Intent
-import android.util.Log
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContextCompat.startActivity
+import androidx.core.graphics.createBitmap
+import androidx.core.view.drawToBitmap
+import java.io.File
+import java.io.FileOutputStream
 import java.io.Serializable
-import kotlin.collections.ArrayList
 
+// author: Kelvin Ngo
 // Adaptor class for listView. Code is based off of Lab4: UILabs
-class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable{
+class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
     private val mItems = ArrayList<Cat>()
+    private lateinit var referenceActivity: CatHouseActivity
+    private var favId = -1
 
+    fun setActivity(activity1: CatHouseActivity) {
+        referenceActivity = activity1
+    }
     override fun getCount(): Int {
         return mItems.size
     }
 
+    fun getList() :ArrayList<Cat>{
+        return mItems
+    }
     override fun getItem(position: Int): Any {
         return mItems[position]
     }
@@ -35,6 +46,10 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable{
         mItems.remove(newCat)
     }
 
+    fun favId(id: Int) {
+        favId = id
+    }
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var currItem = mItems[position]
         val viewHolder: ViewHolder
@@ -49,43 +64,89 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable{
             ) as RelativeLayout?
             viewHolder.mItemLayout?.tag = viewHolder
             viewHolder.position = position
-            viewHolder.hungerBar = viewHolder.mItemLayout?.findViewById(R.id.hungerBar)
-            viewHolder.thirstBar = viewHolder.mItemLayout?.findViewById(R.id.thirstBar)
-            viewHolder.boredomBar = viewHolder.mItemLayout?.findViewById(R.id.boredomBar)
             viewHolder.catName = viewHolder.mItemLayout?.findViewById(R.id.catName)
-            viewHolder.background = viewHolder.mItemLayout?.findViewById(R.id.catStatusView)
             viewHolder.button = viewHolder.mItemLayout?.findViewById(R.id.catIcon)
-
         } else {
             viewHolder = convertView.tag as ViewHolder
         }
 
-
-        var catName = currItem.getName()
-        var hungerPercentMax = currItem.getHungerMax()
-        var thirstPercentMax = currItem.getThirstMax()
-        var boredomPercentMax = currItem.getBoredomMax()
-
-        if(catName != null && catName != "") {
-            val newName = "     $catName"
-            viewHolder.catName?.text = newName
+        if(currItem.getId() == favId) {
+            viewHolder.mItemLayout?.findViewById<ImageView>(R.id.catStatusView)
+                ?.setBackgroundResource(R.drawable.fav_background_cat_status)
+            viewHolder.mItemLayout?.findViewById<TextView>(R.id.catName)
+                ?.setBackgroundResource(R.drawable.fav_catname)
+        } else {
+            viewHolder.mItemLayout?.findViewById<ImageView>(R.id.catStatusView)
+                ?.setBackgroundResource(R.drawable.background_cat_status)
+            viewHolder.mItemLayout?.findViewById<TextView>(R.id.catName)
+                ?.setBackgroundResource(R.drawable.catname)
         }
 
+        var catName = currItem.getName()
 
-        viewHolder.hungerBar?.max = hungerPercentMax
-        viewHolder.hungerBar?.progress = hungerPercentMax
+        //val fileName = "Cat_${currItem.getId()}_test"
+        //val directory = mContext.getDir("imageDir", Context.MODE_PRIVATE)
+        //val file = File(directory, "$fileName.png")
 
-        viewHolder.thirstBar?.max = thirstPercentMax
-        viewHolder.thirstBar?.progress = thirstPercentMax
+        //Log.i("cat", file.absolutePath)
 
-        viewHolder.boredomBar?.max = boredomPercentMax
-        viewHolder.boredomBar?.progress = boredomPercentMax
-        Log.i("HELLO", "HELLO0")
-        viewHolder.button?.setOnClickListener(
-            View.OnClickListener {
-                Log.i("HELLO", "HELLO1")
+        //val bmOptions = BitmapFactory.Options()
+        //bmOptions.inJustDecodeBounds = true
+
+        //val photoW = bmOptions.outWidth
+        //val photoH = bmOptions.outHeight
+
+        //val scaleFactor = (photoH / 131).coerceAtMost(photoW / 118)
+
+        //bmOptions.inJustDecodeBounds = false;
+        //bmOptions.inSampleSize = scaleFactor;
+        //bmOptions.inPurgeable = true;
+
+        //val currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+        val res = mContext.getDrawable(R.drawable.cat_line)
+        viewHolder.button?.setImageDrawable(res)
+
+        if(catName != null && catName != "") {
+            val newName = "  $catName"
+            viewHolder.catName?.text = newName
+            viewHolder.catName?.textSize = 20F
+        }
+
+        viewHolder.button?.setOnLongClickListener(
+            View.OnLongClickListener {
+                val popUpMenu = PopupMenu(mContext, it)
+                popUpMenu.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.popup -> {
+                            referenceActivity.shareButtonPressed(viewHolder.button!!)
+                            true
+                        }
+                        R.id.delete -> {
+                            referenceActivity.delete(currItem)
+                            true
+                        }
+                        R.id.rename -> {
+                            referenceActivity.changeName(currItem, this)
+                            this.notifyDataSetChanged()
+                            true
+                        }
+                        R.id.favorite -> {
+                            referenceActivity.setFav(currItem)
+
+                            true
+                        }
+                        else -> {
+                            true
+                        }
+                    }
+
+                }
+                popUpMenu.inflate(R.menu.popup_menu)
+                popUpMenu.show()
+                true
             }
         )
+
 
         return viewHolder.mItemLayout
     }
@@ -93,12 +154,8 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable{
     internal class ViewHolder: Serializable{
         var position: Int = 0
         var mItemLayout: RelativeLayout? = null
-        var hungerBar: ProgressBar? = null
-        var thirstBar: ProgressBar? = null
-        var boredomBar: ProgressBar? = null
         var catName: TextView? = null
-        var background: View? = null
-        var button: Button? = null
-    }
+        var button: ImageView? = null
 
+    }
 }
