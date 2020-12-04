@@ -1,22 +1,31 @@
 package com.example.cat_status
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.media.Image
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
-// author: Ji Luo, Kelvin Ngo
+// author: Ji Luo, Kelvin Ngo, Anna Kraft
 // mainActivity view for our project should be handled by Ji Luo. In that activity field there
 // should be a button that will activate the CatHouse activity. This mainActivity class will
 // simulate that
 class MainActivity : AppCompatActivity() {
     private lateinit var catLists : ArrayList<Cat>
     private var favCat : Cat? = null
+    private var uniqueCatID = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +45,9 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(SPTITLE, MODE_PRIVATE)
         val jsonCatLists = sharedPreferences.getString(SPCATKEY, "")
         val jsonFavCat = sharedPreferences.getString(SPFAVKEY, "")
+        uniqueCatID = sharedPreferences.getInt(UNIQUEID, 0)
 
         val gson = Gson()
-        Toast.makeText(applicationContext, "$jsonFavCat", Toast.LENGTH_SHORT).show()
         if(jsonFavCat != "") {
             favCat = gson.fromJson(jsonFavCat, Cat ::class.java)
         }
@@ -53,16 +62,34 @@ class MainActivity : AppCompatActivity() {
             // id. The id needs to be unique and cannot be -1
             val apperanceGenerator = CatAppearanceGenerator(resources, applicationContext)
 
-            catLists.add(Cat(0))
-            catLists.add(Cat(1))
-            catLists.add(Cat(2))
-            catLists.add(Cat(3))
-            catLists.add(Cat(4))
-            catLists.add(Cat(5))
-            catLists.add(Cat(6))
-            catLists.add(Cat(7))
-            catLists.add(Cat(8))
+            while(uniqueCatID < 10) {
+                catLists.add(Cat(uniqueCatID, apperanceGenerator.generateCats(uniqueCatID)))
+                uniqueCatID++
+            }
 
+        }
+
+        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+        favCatImage.x = -60F
+
+        // inflates a view in the main activity with the current favorite cat
+        if (favCat != null) {
+            val favCatNameView = findViewById<TextView>(R.id.favCatName)
+
+
+            favCatNameView.text = favCat?.getName()
+            favCatNameView.textSize = 20F
+
+            val fileName = "cat_${favCat?.getId()}.png"
+            val directory = applicationContext.getDir("imageDir", Context.MODE_PRIVATE)
+            val file = File(directory, "$fileName")
+
+            val bmOptions = BitmapFactory.Options()
+
+            var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+            favCatImage.setImageBitmap(currBitmap)
+            favCatImage.scaleX = 3F
+            favCatImage.scaleY = 3F
         }
 
         // when this button is pressed, the cat house activity is created. We need the
@@ -93,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         val jsonFavCat = gson.toJson(favCat)
         sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
         sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
-
+        sharePEditor.putInt(UNIQUEID, uniqueCatID).apply()
         super.onPause()
     }
 
@@ -107,11 +134,34 @@ class MainActivity : AppCompatActivity() {
                 val extras = data?.extras
                 catLists = extras?.get(ICATKEY) as ArrayList<Cat>
                 if(extras.get(IFAVKEY) != null) {
+
                     favCat = data?.extras?.get(IFAVKEY) as Cat
-                    Toast.makeText(applicationContext, "${favCat!!.getName()}", Toast.LENGTH_SHORT).show()
+                    if (favCat != null) {
+                        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+                        val favCatNameView = findViewById<TextView>(R.id.favCatName)
+
+                        favCatNameView.text = favCat?.getName()
+                        favCatNameView.textSize = 20F
+
+                        val fileName = "cat_${favCat?.getId()}.png"
+                        val directory = applicationContext.getDir("imageDir", Context.MODE_PRIVATE)
+                        val file = File(directory, "$fileName")
+                        val bmOptions = BitmapFactory.Options()
+
+                        var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+                        favCatImage.setImageBitmap(currBitmap)
+
+                        favCatImage.scaleX = 3F
+                        favCatImage.scaleY = 3F
+
+                    }
                 } else {
                     favCat = null
-                    Toast.makeText(applicationContext, "No favorite cat", Toast.LENGTH_SHORT).show()
+
+                    val favCatNameView = findViewById<TextView>(R.id.favCatName)
+                    favCatNameView.text = ""
+                    val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+                    favCatImage.setImageDrawable(null)
                 }
 
             }
@@ -124,5 +174,6 @@ class MainActivity : AppCompatActivity() {
         const val SPFAVKEY = "favoriteSP"
         const val ICATKEY = "catListsIntent"
         const val IFAVKEY = "favoriteIntent"
+        const val UNIQUEID = "uniqueID"
     }
 }

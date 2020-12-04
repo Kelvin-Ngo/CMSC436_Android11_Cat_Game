@@ -3,6 +3,7 @@ package com.example.cat_status
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ListActivity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -43,12 +44,12 @@ class CatHouseActivity : Activity() {
         val extras = intent.extras
         mAdapter = catAdapter(applicationContext)
         mAdapter.setActivity(this)
-        val pictureHolder = GridView(applicationContext)
+        setContentView(R.layout.cathouse_view)
+        var pictureHolder = findViewById<GridView>(R.id.gridView)
         pictureHolder.adapter = mAdapter
         pictureHolder.numColumns = 2
         pictureHolder.verticalSpacing = 20
         pictureHolder.horizontalSpacing = 20
-        setContentView(pictureHolder)
 
 
         // store the cats into a local variable. If the user has no cats, we instead inflate
@@ -204,9 +205,16 @@ class CatHouseActivity : Activity() {
         builder.setTitle("Do You Really Want to Delete this Cat?")
 
         builder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
-            if(favCat != null && currCat.equals(favCat)) {
+            if(favCat != null && currCat == favCat) {
                 favCat == null
             }
+
+            val fileName = "cat_${currCat.getId()}.png"
+            val directory = applicationContext.getDir("imageDir", Context.MODE_PRIVATE)
+            val file = File(directory, "$fileName")
+
+            file.delete()
+
             mAdapter.remove(currCat)
             mAdapter.notifyDataSetChanged()
         })

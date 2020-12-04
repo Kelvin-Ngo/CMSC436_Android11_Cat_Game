@@ -5,7 +5,7 @@
         android:title="Favorite"
         />
     <item
-        android:id="@+id/popup"
+        android:id="@+id/share"
         android:title="Share"
         />
 
@@ -18,4 +18,6 @@
         android:id="@+id/delete"
         android:title="Delete"
         />
+
+
 </menu>

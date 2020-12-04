@@ -13,10 +13,10 @@ import java.io.Serializable
 // in an intent. Note that any classes that Cat uses in its code will also need to implement
 // Serializable in order for this to work
 
-class Cat(id: Int): Serializable {
+class Cat(id: Int, imageLoc : String?): Serializable {
     private var id = id
     private var name = "Cat#$id"
-    // private var apperance = catImage
+    private var imageLoc = imageLoc
 
     fun getName(): String {
         return name
@@ -30,9 +30,9 @@ class Cat(id: Int): Serializable {
         return id
     }
 
-    //fun getImageLoc() : Bitmap?{
-     //   return apperance
-    //}
+    fun getImageLoc() : String?{
+        return imageLoc
+    }
 
     override fun equals(other: Any?): Boolean {
         if (other is Cat) {

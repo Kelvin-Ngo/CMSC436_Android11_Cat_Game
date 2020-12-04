@@ -2,12 +2,14 @@ package com.example.cat_status
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
 import androidx.core.view.drawToBitmap
 import java.io.File
 import java.io.FileOutputStream
@@ -66,6 +68,12 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
             viewHolder.position = position
             viewHolder.catName = viewHolder.mItemLayout?.findViewById(R.id.catName)
             viewHolder.button = viewHolder.mItemLayout?.findViewById(R.id.catIcon)
+
+            viewHolder.button?.scaleX = 3F
+            viewHolder.button?.scaleY = 3F
+            viewHolder.button?.x = -55F
+            viewHolder.button?.y = 10F
+
         } else {
             viewHolder = convertView.tag as ViewHolder
         }
@@ -84,27 +92,14 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
 
         var catName = currItem.getName()
 
-        //val fileName = "Cat_${currItem.getId()}_test"
-        //val directory = mContext.getDir("imageDir", Context.MODE_PRIVATE)
-        //val file = File(directory, "$fileName.png")
+        val fileName = "cat_${currItem.getId()}.png"
+        val directory = mContext.getDir("imageDir", Context.MODE_PRIVATE)
+        val file = File(directory, "$fileName")
 
-        //Log.i("cat", file.absolutePath)
+        val bmOptions = BitmapFactory.Options()
 
-        //val bmOptions = BitmapFactory.Options()
-        //bmOptions.inJustDecodeBounds = true
-
-        //val photoW = bmOptions.outWidth
-        //val photoH = bmOptions.outHeight
-
-        //val scaleFactor = (photoH / 131).coerceAtMost(photoW / 118)
-
-        //bmOptions.inJustDecodeBounds = false;
-        //bmOptions.inSampleSize = scaleFactor;
-        //bmOptions.inPurgeable = true;
-
-        //val currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
-        val res = mContext.getDrawable(R.drawable.cat_line)
-        viewHolder.button?.setImageDrawable(res)
+        var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+        viewHolder.button?.setImageBitmap(currBitmap)
 
         if(catName != null && catName != "") {
             val newName = "  $catName"
@@ -117,7 +112,7 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
                 val popUpMenu = PopupMenu(mContext, it)
                 popUpMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
-                        R.id.popup -> {
+                        R.id.share -> {
                             referenceActivity.shareButtonPressed(viewHolder.button!!)
                             true
                         }
