@@ -1,26 +1,22 @@
 package com.example.cat_status
 
 import android.app.Activity
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
-import android.os.Build
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import androidx.core.graphics.scale
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.util.*
 import kotlin.collections.ArrayList
 
 // author: Ji Luo, Kelvin Ngo, Anna Kraft
@@ -33,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var catLists : ArrayList<Cat>
     private var favCat : Cat? = null
     private var uniqueCatID = 0
+    private var mediaPlayer: MediaPlayer? = null
 
     private lateinit var foodbar: ProgressBar
     private lateinit var waterbar: ProgressBar
@@ -76,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
         eating()
         drinking()
-
+        playing()
         //set up toy and image
         val toyButton = findViewById<ImageView>(R.id.toy)
         toyButton.setImageResource(R.drawable.toy)
@@ -120,28 +117,8 @@ class MainActivity : AppCompatActivity() {
                 uniqueCatID++
             }
         }
-        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
-        favCatImage.x = -60F
 
-        // inflates a view in the main activity with the current favorite cat
-        if (favCat != null) {
-            val favCatNameView = findViewById<TextView>(R.id.favCatName)
-
-
-            favCatNameView.text = favCat?.getName()
-            favCatNameView.textSize = 20F
-
-            val fileName = "cat_${favCat?.getId()}.png"
-            val directory = applicationContext.getDir("imageDir", Context.MODE_PRIVATE)
-            val file = File(directory, "$fileName")
-
-            val bmOptions = BitmapFactory.Options()
-
-            var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
-            favCatImage.setImageBitmap(currBitmap)
-            favCatImage.scaleX = 3F
-            favCatImage.scaleY = 3F
-        }
+        createFavCat()
 
         // when this button is pressed, the cat house activity is created. We need the
         // list of cats and the favorite cat if there's any in order to keep the two views
@@ -156,6 +133,40 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(intent, 1)
             }
         )
+    }
+
+    // inflates a view in the main activity with the current favorite cat
+    private fun createFavCat(){
+        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+        favCatImage.x = -60F
+
+        if (favCat != null) {
+            val favCatNameView = findViewById<TextView>(R.id.favCatName)
+
+
+            favCatNameView.text = favCat?.getName()
+            favCatNameView.textSize = 17F
+
+            val fileName = "cat_${favCat?.getId()}.png"
+            val file = File(applicationContext.filesDir, "$fileName")
+
+            val bmOptions = BitmapFactory.Options()
+
+            var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+            Log.i("HELLO", "HELLO")
+            favCatImage.setImageBitmap(currBitmap)
+            favCatImage.scaleX = 3F
+            favCatImage.scaleY = 3F
+
+            if(mediaPlayer == null) {
+                mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
+            }
+
+            favCatImage.setOnClickListener {
+                mediaPlayer?.start()
+            }
+        }
+
     }
 
     override fun onStop() {
@@ -220,18 +231,26 @@ class MainActivity : AppCompatActivity() {
                         val favCatNameView = findViewById<TextView>(R.id.favCatName)
 
                         favCatNameView.text = favCat?.getName()
-                        favCatNameView.textSize = 20F
+                        favCatNameView.textSize = 17F
 
                         val fileName = "cat_${favCat?.getId()}.png"
-                        val directory = applicationContext.getDir("imageDir", Context.MODE_PRIVATE)
-                        val file = File(directory, "$fileName")
+                        val file = File(applicationContext.filesDir, "$fileName")
                         val bmOptions = BitmapFactory.Options()
 
                         var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+
                         favCatImage.setImageBitmap(currBitmap)
 
                         favCatImage.scaleX = 3F
                         favCatImage.scaleY = 3F
+
+                        if(mediaPlayer == null) {
+                            mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
+                        }
+
+                        favCatImage.setOnClickListener {
+                            mediaPlayer?.start()
+                        }
 
                     }
                 } else {
@@ -241,6 +260,7 @@ class MainActivity : AppCompatActivity() {
                     favCatNameView.text = ""
                     val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
                     favCatImage.setImageDrawable(null)
+                    favCatImage.setOnClickListener(null)
                 }
 
             }
