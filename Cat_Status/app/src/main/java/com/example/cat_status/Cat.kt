@@ -17,6 +17,7 @@ class Cat(id: Int, imageLoc : String?): Serializable {
     private var id = id
     private var name = "Cat#$id"
     private var imageLoc = imageLoc
+    private var markedDelete = false
 
     fun getName(): String {
         return name
@@ -32,6 +33,14 @@ class Cat(id: Int, imageLoc : String?): Serializable {
 
     fun getImageLoc() : String?{
         return imageLoc
+    }
+
+    fun markedForDelete(bol : Boolean) {
+        markedDelete = bol
+    }
+
+    fun isMarkedDelete() : Boolean {
+        return markedDelete
     }
 
     override fun equals(other: Any?): Boolean {
