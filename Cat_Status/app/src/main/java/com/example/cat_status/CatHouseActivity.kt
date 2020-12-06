@@ -79,12 +79,11 @@ class CatHouseActivity : Activity() {
         val intent = Intent(applicationContext, MainActivity :: class.java)
         val list = mAdapter.getList()
         intent.putExtra(ICATKEY, list)
-        if(favCat != null && list.contains(favCat)) {
+        if(favCat != null && list.contains(favCat!!)) {
             intent.putExtra(IFAVKEY, favCat)
         }
         setResult(RESULT_OK, intent)
         super.onBackPressed()
-
     }
 
     // This method is to handle the shared button being pressed. We need permission to share
