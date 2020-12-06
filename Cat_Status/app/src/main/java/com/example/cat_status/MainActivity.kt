@@ -1,6 +1,7 @@
 package com.example.cat_status
 
 import android.app.Activity
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
