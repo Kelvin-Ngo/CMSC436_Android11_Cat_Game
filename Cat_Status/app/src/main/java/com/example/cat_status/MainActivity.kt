@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.media.Image
 import android.graphics.Bitmap
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -31,7 +32,7 @@ import kotlin.math.min
 // should be a button that will activate the CatHouse activity. This mainActivity class will
 // simulate that
 class MainActivity : AppCompatActivity() {
-    private var DefaultProgressTime:Long = 10000
+    private var DefaultProgressTime:Long = 60000
     private var DefaultRate:Long = 1000
     private var catLists : ArrayList<Cat> = arrayListOf<Cat>()
     private var favCat : Cat? = null
@@ -48,16 +49,16 @@ class MainActivity : AppCompatActivity() {
     private var mTimeLeftInMillisWater:Long = DefaultProgressTime
     private var mTimeLeftInMillisToy:Long = 0
     private var isPlaying = false
-  
+
     private lateinit var mNotificationManager: NotificationManager
-    val listener = SharedPreferencesListener()
+    private val listener = SharedPreferencesListener()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        createNoitificationChannels()
+        createNotificationChannels()
 
 
         //get information from the last update and restore them
@@ -143,15 +144,32 @@ class MainActivity : AppCompatActivity() {
             workManager.enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, catTask)
         }
 
-        // val handler = Handler(Looper.getMainLooper())
 
         createNotificationChannel()
 
         // this chunk of code handles retrieving saved data when the app is closed.
         // how to save data to be retrieved in the first place is coded further down
-
-
         countPrefs.registerOnSharedPreferenceChangeListener(listener)
+
+        Log.i(TAG, "Found new cat in Shared Preferences")
+        val jsonCatLists = countPrefs!!.getString(SPCATKEY, "")
+        val jsonFavCat = countPrefs.getString(SPFAVKEY, "")
+        uniqueCatID = countPrefs.getInt(UNIQUEID, 0)
+
+        val gson = Gson()
+        if (jsonFavCat != "") {
+
+            favCat = gson.fromJson(jsonFavCat, Cat::class.java)
+        }
+
+        if (jsonCatLists != "") {
+            Log.i(TAG, "Cat List is not empty - loading cats")
+            val type = object : TypeToken<List<Cat>>() {}.type
+            catLists = gson.fromJson(jsonCatLists, type)
+
+        } else {
+            Log.i(TAG, "Cat List is empty :(")
+        }
 
         createFavCat()
 
@@ -163,9 +181,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(applicationContext, CatHouseActivity::class.java)
                 // we put the cats as an extra in the intent when we start up. We will handle
                 // retrieving the data in CatHouseActivity
-                intent.putExtra(ICATKEY, catLists)
-                intent.putExtra(IFAVKEY, favCat)
-                startActivityForResult(intent, 1)
+                startActivity(intent)
             }
         )
     }
@@ -245,7 +261,7 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
 
 
-        val sharedPreferences = getSharedPreferences(SPTITLE, MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
         val sharePEditor = sharedPreferences.edit()
 
         val gson = Gson()
@@ -314,55 +330,55 @@ class MainActivity : AppCompatActivity() {
     // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
     // we need are the cat lists and the favorite cat. This is so that any changes made in the
     // CatHouseAtivity view is reflected in the main activity
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                val extras = data?.extras
-                catLists = extras?.get(ICATKEY) as ArrayList<Cat>
-                if(extras.get(IFAVKEY) != null) {
-
-                    favCat = data?.extras?.get(IFAVKEY) as Cat
-                    if (favCat != null) {
-                        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
-                        val favCatNameView = findViewById<TextView>(R.id.favCatName)
-
-                        favCatNameView.text = favCat?.getName()
-                        favCatNameView.textSize = 17F
-
-                        val fileName = "cat_${favCat?.getId()}.png"
-                        val file = File(applicationContext.filesDir, "$fileName")
-                        val bmOptions = BitmapFactory.Options()
-
-                        var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
-
-                        favCatImage.setImageBitmap(currBitmap)
-
-                        favCatImage.scaleX = 3F
-                        favCatImage.scaleY = 3F
-
-                        if(mediaPlayer == null) {
-                            mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
-                        }
-
-                        favCatImage.setOnClickListener {
-                            mediaPlayer?.start()
-                        }
-
-                    }
-                } else {
-                    favCat = null
-
-                    val favCatNameView = findViewById<TextView>(R.id.favCatName)
-                    favCatNameView.text = ""
-                    val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
-                    favCatImage.setImageDrawable(null)
-                    favCatImage.setOnClickListener(null)
-                }
-
-            }
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if(requestCode == 1) {
+//            if (resultCode == Activity.RESULT_OK) {
+//                val extras = data?.extras
+//                catLists = extras?.get(ICATKEY) as ArrayList<Cat>
+//                if(extras.get(IFAVKEY) != null) {
+//
+//                    favCat = data?.extras?.get(IFAVKEY) as Cat
+//                    if (favCat != null) {
+//                        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+//                        val favCatNameView = findViewById<TextView>(R.id.favCatName)
+//
+//                        favCatNameView.text = favCat?.getName()
+//                        favCatNameView.textSize = 17F
+//
+//                        val fileName = "cat_${favCat?.getId()}.png"
+//                        val file = File(applicationContext.filesDir, "$fileName")
+//                        val bmOptions = BitmapFactory.Options()
+//
+//                        var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+//
+//                        favCatImage.setImageBitmap(currBitmap)
+//
+//                        favCatImage.scaleX = 3F
+//                        favCatImage.scaleY = 3F
+//
+//                        if(mediaPlayer == null) {
+//                            mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
+//                        }
+//
+//                        favCatImage.setOnClickListener {
+//                            mediaPlayer?.start()
+//                        }
+//
+//                    }
+//                } else {
+//                    favCat = null
+//
+//                    val favCatNameView = findViewById<TextView>(R.id.favCatName)
+//                    favCatNameView.text = ""
+//                    val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+//                    favCatImage.setImageDrawable(null)
+//                    favCatImage.setOnClickListener(null)
+//                }
+//
+//            }
+//        }
+//    }
 
     inner class SharedPreferencesListener : SharedPreferences.OnSharedPreferenceChangeListener {
         override fun onSharedPreferenceChanged(
@@ -425,7 +441,7 @@ class MainActivity : AppCompatActivity() {
     private fun drinking(){
         mCountDownTimerWater = object : CountDownTimer(mTimeLeftInMillisWater, DefaultRate) {
             override fun onTick(millisUntilFinished: Long) {
-                
+
                 waterbar.setProgress(100*millisUntilFinished.toInt()/DefaultProgressTime.toInt())
                 mTimeLeftInMillisWater = millisUntilFinished
 
@@ -524,8 +540,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    /*
-    private fun createNoitificationChannels(){
+
+    private fun createNotificationChannels(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val mChannel = NotificationChannel(channelID1, "CatChannel", NotificationManager.IMPORTANCE_DEFAULT)
             mChannel.description = "Water and Food situation"
@@ -566,7 +582,6 @@ class MainActivity : AppCompatActivity() {
         private const val WORK_TAG = "CatService"
 
         const val SPCount = "countPrefs"
-        const val SPTITLE = "catTitle"
         const val SPCATKEY = "catListsSP"
         const val SPFAVKEY = "favoriteSP"
         const val SPFOOD = "foodSP"

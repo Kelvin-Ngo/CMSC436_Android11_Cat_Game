@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import com.google.gson.Gson
 import java.io.File
 import java.io.Serializable
 
@@ -29,7 +30,6 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
     private var multiDelete = false
     private var isMute = false
     private var favCat : Cat? = null
-
 
     override fun getCount(): Int {
         return mItems.size
@@ -255,6 +255,7 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
 
         if (currCat != favCat) {
             favCat = currCat
+            updateList()
             notifyDataSetChanged()
         }
     }
@@ -276,6 +277,7 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
 
                     remove(currCat)
                 }
+                updateList()
                 notifyDataSetChanged()
             })
             builder.setNegativeButton("CANCEL", null)
@@ -335,6 +337,9 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
 
             file.delete()
             remove(currCat)
+
+            updateList()
+
             notifyDataSetChanged()
         })
 
@@ -401,6 +406,17 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
         mContext.startActivity(chooser)
     }
 
+    private fun updateList(){
+        val sharedPreferences = mContext.getSharedPreferences(SPCount, Context.MODE_PRIVATE)
+        val sharePEditor = sharedPreferences.edit()
+
+        val gson = Gson()
+        val jsonCatLists = gson.toJson(mItems)
+        val jsonFavCat = gson.toJson(favCat)
+        sharePEditor.putString(CatHouseActivity.SPFAVKEY, jsonFavCat).apply()
+        sharePEditor.putString(CatHouseActivity.SPCATKEY, jsonCatLists).apply()
+    }
+
     internal class ViewHolder: Serializable{
         var position: Int = 0
         var mItemLayout: RelativeLayout? = null
@@ -409,5 +425,15 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
         var checkBox: CheckBox? = null
 
 
+    }
+
+    companion object {
+        const val TAG = "CatAdapter"
+        const val SPCount = "countPrefs"
+        const val SPCATKEY = "catListsSP"
+        const val SPFAVKEY = "favoriteSP"
+        const val ICATKEY = "catListsIntent"
+        const val IFAVKEY = "favoriteIntent"
+        const val MAXCHARNAME = 13
     }
 }
