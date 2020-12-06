@@ -1,8 +1,6 @@
 package com.example.cat_status
 
-import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -26,13 +24,14 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import kotlin.collections.ArrayList
+import kotlin.math.min
 
 // author: Ji Luo, Kelvin Ngo, Anna Kraft
 // mainActivity view for our project should be handled by Ji Luo. In that activity field there
 // should be a button that will activate the CatHouse activity. This mainActivity class will
 // simulate that
 class MainActivity : AppCompatActivity() {
-    private var DefaultProgressTime:Long = 100000
+    private var DefaultProgressTime:Long = 10000
     private var DefaultRate:Long = 1000
     private var catLists : ArrayList<Cat> = arrayListOf<Cat>()
     private var favCat : Cat? = null
@@ -49,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private var mTimeLeftInMillisWater:Long = DefaultProgressTime
     private var mTimeLeftInMillisToy:Long = 0
     private var isPlaying = false
+  
     private lateinit var mNotificationManager: NotificationManager
     val listener = SharedPreferencesListener()
 
@@ -57,14 +57,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        createNoitificationChannels()
+
+
+        //get information from the last update and restore them
         val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
-        mTimeLeftInMillisFood = countPrefs.getLong(SPFOOD, DefaultProgressTime)
-        mTimeLeftInMillisWater = countPrefs.getLong(SPWATER, DefaultProgressTime)
-        mTimeLeftInMillisToy = countPrefs.getLong(SPTOY, 0)
+        val current = System.currentTimeMillis()
+        val leaving = countPrefs.getLong("LeavingTime", current)
+
+        mTimeLeftInMillisFood = countPrefs.getLong(SPFOOD, DefaultProgressTime) - (current - leaving)
+        mTimeLeftInMillisWater = countPrefs.getLong(SPWATER, DefaultProgressTime) - (current - leaving)
+        mTimeLeftInMillisToy = countPrefs.getLong(SPTOY, 0) - (current - leaving)
         isPlaying = countPrefs.getBoolean(SPPLAY, false)
+        if(mTimeLeftInMillisFood < 0){
+            mTimeLeftInMillisFood = 0
+        }
+        if(mTimeLeftInMillisWater < 0){
+            mTimeLeftInMillisWater = 0
+        }
+        if(mTimeLeftInMillisToy < 0){
+            mTimeLeftInMillisToy = 0
+            isPlaying = false
+        }
+        if(isPlaying){
+            playing()
+        }
+
         // inflate catHouseView whenever the button is clicked
         val catHouseButton = findViewById<ImageButton>(R.id.catHouseButton)
-
+        catHouseButton.setImageResource(R.drawable.house)
         //Set up foodbar and food image
         foodbar = findViewById<ProgressBar>(R.id.food)
         foodbar.setOnClickListener(View.OnClickListener {
@@ -77,6 +98,7 @@ class MainActivity : AppCompatActivity() {
                 workManager.enqueueUniqueWork(WORK_TAG, ExistingWorkPolicy.REPLACE, catTask)
             }
         })
+
         val foodImage = findViewById<ImageView>(R.id.foodPNG)
         foodImage.setImageResource(R.drawable.food)
         //set up water bar and image
@@ -183,12 +205,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
+        //When the app is stopping, save all the current data to Shared Preference
         val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
         val editor = countPrefs.edit()
-
+        editor.putLong("LeavingTime", System.currentTimeMillis())
         editor.putLong(SPFOOD, mTimeLeftInMillisFood)
         editor.putLong(SPWATER, mTimeLeftInMillisWater)
+        editor.putLong(SPTOY, mTimeLeftInMillisToy)
+        editor.putBoolean(SPPLAY, isPlaying)
         editor.apply()
+
+
+        //create notification and alarm
+        val intent = Intent(this, NotificationBroad::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+
+        val mAlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val timeCurrent = System.currentTimeMillis()
+        val timeToNotify = min(mTimeLeftInMillisFood,mTimeLeftInMillisWater)
+
+        mAlarmManager.set(AlarmManager.RTC_WAKEUP, timeCurrent + timeToNotify, pendingIntent)
+        Toast.makeText(this, "Alarm Set", Toast.LENGTH_LONG).show()
         super.onStop()
     }
 
@@ -197,8 +234,10 @@ class MainActivity : AppCompatActivity() {
     // a select few data types, we have to convert our cat list and favorite cat into a string using
     // Gson and Json
     override fun onPause() {
+        //Same as above, save data to shared preference
         val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
         val editor = countPrefs.edit()
+        editor.putLong("LeavingTime", System.currentTimeMillis())
         editor.putLong(SPFOOD, mTimeLeftInMillisFood)
         editor.putLong(SPWATER, mTimeLeftInMillisWater)
         editor.putLong(SPTOY, mTimeLeftInMillisToy)
@@ -215,17 +254,61 @@ class MainActivity : AppCompatActivity() {
         sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
         sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
         sharePEditor.putInt(UNIQUEID, uniqueCatID).apply()
+
+
         super.onPause()
     }
 
     override fun onResume() {
+        // unpack data from shared Preferences
         val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
-        mTimeLeftInMillisFood = countPrefs.getLong(SPFOOD, 60000)
-        mTimeLeftInMillisWater = countPrefs.getLong(SPWATER, 60000)
-        mTimeLeftInMillisToy = countPrefs.getLong(SPTOY, 0)
+        val current = System.currentTimeMillis()
+        val leaving = countPrefs.getLong("LeavingTime", current)
+        mTimeLeftInMillisFood = countPrefs.getLong(SPFOOD, DefaultProgressTime) - (current - leaving)
+        if (mTimeLeftInMillisFood < 0){
+            mTimeLeftInMillisFood = 0
+        }
+        mTimeLeftInMillisWater = countPrefs.getLong(SPWATER, DefaultProgressTime) - (current - leaving)
+        if(mTimeLeftInMillisWater < 0){
+            mTimeLeftInMillisFood = 0
+        }
+        mTimeLeftInMillisToy = countPrefs.getLong(SPTOY, 0) - (current - leaving)
         isPlaying = countPrefs.getBoolean(SPPLAY, false)
 
+        if(mTimeLeftInMillisToy < 0){
+            mTimeLeftInMillisToy = 0
+            isPlaying = false
+        }
+        if(isPlaying){
+            playing()
+        }
+
         super.onResume()
+    }
+
+    override fun onStart() {
+        //Unpack data here to
+        val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
+        val current = System.currentTimeMillis()
+        val leaving = countPrefs.getLong("LeavingTime", current)
+        mTimeLeftInMillisFood = countPrefs.getLong(SPFOOD, DefaultProgressTime) - (current - leaving)
+        if (mTimeLeftInMillisFood < 0){
+            mTimeLeftInMillisFood = 0
+        }
+        mTimeLeftInMillisWater = countPrefs.getLong(SPWATER, DefaultProgressTime) - (current - leaving)
+        if(mTimeLeftInMillisWater < 0){
+            mTimeLeftInMillisFood = 0
+        }
+        mTimeLeftInMillisToy = countPrefs.getLong(SPTOY, 0) - (current - leaving)
+        isPlaying = countPrefs.getBoolean(SPPLAY, false)
+        if(mTimeLeftInMillisToy < 0){
+            mTimeLeftInMillisToy = 0
+            isPlaying = false
+        }
+        if(isPlaying){
+            playing()
+        }
+        super.onStart()
     }
 
     // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
@@ -312,6 +395,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //cats start eating the food
+    //create a count down timer for food bar
     private fun eating(){
         mCountDownTimerFood = object : CountDownTimer(mTimeLeftInMillisFood, DefaultRate) {
             override fun onTick(millisUntilFinished: Long) {
@@ -337,6 +421,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //cats start drinking the water
+    //create a count down timer for water bar
     private fun drinking(){
         mCountDownTimerWater = object : CountDownTimer(mTimeLeftInMillisWater, DefaultRate) {
             override fun onTick(millisUntilFinished: Long) {
@@ -361,9 +446,12 @@ class MainActivity : AppCompatActivity() {
         mCountDownTimerWater.start()
     }
 
+    //cats will play with toy
+    //each click will increment playing time for 1 minute
     private fun playing(){
         isPlaying = true
-        mCountDownTimerToy = object : CountDownTimer(mTimeLeftInMillisToy, 1000) {
+
+        mCountDownTimerToy = object : CountDownTimer(mTimeLeftInMillisToy, DefaultRate) {
             override fun onTick(millisUntilFinished: Long) {
 
                 mTimeLeftInMillisToy = millisUntilFinished
@@ -382,7 +470,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 val time = "$hour:$mins:$second"
 
-                toyStatu.setText(time)
+                toyStatu.setText("Efficiency Up: " + time)
 
                 val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
                 val editor = countPrefs.edit()
@@ -393,7 +481,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish(){
                 isPlaying = false
-                toyStatu.setText("00:00")
+
+                toyStatu.setText("Your cats want to play with you! New Cat Generation Efficiency Reduced!")
+
                 val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
                 val editor = countPrefs.edit()
                 editor.putBoolean(SPPLAY, isPlaying)
@@ -420,6 +510,7 @@ class MainActivity : AppCompatActivity() {
         return mTimeLeftInMillisFood > 1000 && mTimeLeftInMillisWater > 1000
     }
 
+    //create notification channel
     private fun createNotificationChannel() {
         val name = getString(R.string.channel_name)
         val desc = getString(R.string.channel_desc)
@@ -436,12 +527,12 @@ class MainActivity : AppCompatActivity() {
     /*
     private fun createNoitificationChannels(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val mChannel = NotificationChannel(channelID1, "LowFoodChannel", NotificationManager.IMPORTANCE_DEFAULT)
+            val mChannel = NotificationChannel(channelID1, "CatChannel", NotificationManager.IMPORTANCE_DEFAULT)
             mChannel.description = "Water and Food situation"
+            val mNotificationManager = getSystemService(NotificationManager::class.java) as NotificationManager
             mNotificationManager.createNotificationChannel(mChannel)
         }
-
-    }*/
+    }
     /*
     public fun sendOnChannel1(statu: String){
         val title = statu
@@ -485,7 +576,7 @@ class MainActivity : AppCompatActivity() {
         const val ICATKEY = "catListsIntent"
         const val IFAVKEY = "favoriteIntent"
         const val UNIQUEID = "uniqueID"
-        const val channelID1 = "my_channel_01"
+        const val channelID1 = "cat_channel"
         private const val CHANNEL_ID = "New_Cat_Notif"
     }
 }

@@ -86,6 +86,20 @@ class CatHouseActivity : Activity() {
 
     }
 
+
+    // when you press back in this view, you should return to main activity so, we need to send
+    // a result intent that should be handled by onActivityResult() in main activity. Once again,
+    // this is to maintain consistency between main activity and CatHouseActivity
+    override fun onBackPressed() {
+        val intent = Intent(applicationContext, MainActivity :: class.java)
+        val list = mAdapter.getList()
+        intent.putExtra(ICATKEY, list)
+        if(favCat != null && list.contains(favCat!!)) {
+            intent.putExtra(IFAVKEY, favCat)
+        }
+        setResult(RESULT_OK, intent)
+        super.onBackPressed()
+
     // Grants or denies permission to allow share functionality. If request is denied then
     // share won't work
     override fun onRequestPermissionsResult(
@@ -101,7 +115,6 @@ class CatHouseActivity : Activity() {
                     Toast.makeText(applicationContext, "READ PERMISSION DENIED", Toast.LENGTH_LONG).show()
                 }
         }
-
     }
 
     //handles creating the icon and creating the functionality of muting
