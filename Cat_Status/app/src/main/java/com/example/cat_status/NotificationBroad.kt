@@ -12,7 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 class NotificationBroad: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val builder = NotificationCompat.Builder(context!!, "catNotification")
-            .setSmallIcon(R.drawable.notification_icon)
+            .setSmallIcon(R.drawable.ic_cat)
             .setContentTitle("Cat Notification")
             .setContentText("Please come back! Your cats need your care!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

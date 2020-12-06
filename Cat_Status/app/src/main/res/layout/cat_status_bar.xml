@@ -43,5 +43,20 @@
         android:textColor="#000000"
         android:textStyle="bold" />
 
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="133dp"
+        android:layout_marginTop="47dp"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:checked="false"
+        android:visibility="gone"
+
+
+
+        />
+
 
 </RelativeLayout>

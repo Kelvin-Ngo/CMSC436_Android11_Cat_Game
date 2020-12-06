@@ -83,9 +83,9 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
     private fun bitmapToPng(bitmap: Bitmap, fileName: String): File? {
         var file: File? = null
         return try {
-            file = File(applicationContext.getDir("imageDir", Context.MODE_PRIVATE).absolutePath, fileName)
-            // file = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + File.separator + fileName)
+            file = File(applicationContext.filesDir, fileName)
             file.createNewFile()
+
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
             val bitMapData = byteArrayOutputStream.toByteArray()
@@ -125,6 +125,7 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
         // convert catView to file
         val file = bitmapToPng(viewToBitmap(catView, BITMAP_WIDTH, BITMAP_HEIGHT)!!, "cat_$CatID.png")
         if (file != null) {
+            Log.i("HELLO", file.absolutePath)
             return file.absolutePath
         } else {
             return null
