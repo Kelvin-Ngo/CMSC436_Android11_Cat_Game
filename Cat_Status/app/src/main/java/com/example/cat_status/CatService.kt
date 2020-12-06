@@ -49,7 +49,7 @@ class CatService(context: Context, workerParams: WorkerParameters) : Worker(cont
             WorkManager.getInstance(currContext).cancelAllWorkByTag(TAG)
         }
 
-        return Result.success(workDataOf(KEY_NEWCAT to newCat))
+        return Result.success()
     }
 
     private fun rollCat(){

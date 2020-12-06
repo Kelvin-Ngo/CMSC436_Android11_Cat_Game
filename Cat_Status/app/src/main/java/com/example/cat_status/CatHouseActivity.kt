@@ -3,10 +3,7 @@ package com.example.cat_status
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothClass
-import android.content.ComponentName
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -18,6 +15,7 @@ import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.File
 
 
@@ -33,9 +31,13 @@ class CatHouseActivity : Activity() {
     private var favCat: Cat? = null
     private lateinit var mAdapter : catAdapter
     private var isMute = false
+    private val listener = SharedPreferencesListener()
+    private var catListSize = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
 
         // retrieve the cats from the intent that was sent
         val extras = intent.extras
@@ -49,14 +51,34 @@ class CatHouseActivity : Activity() {
         pictureHolder.verticalSpacing = 20
         pictureHolder.horizontalSpacing = 20
 
+        //get list as it is when this activity is opened
+        val jsonCatLists = sharedPreferences!!.getString(MainActivity.SPCATKEY, "")
+        val jsonFavCat = sharedPreferences.getString(MainActivity.SPFAVKEY, "")
 
-        if (extras != null) {
-            cats = extras.get(ICATKEY) as ArrayList<Cat>
-            if(extras.get(IFAVKEY) != null) {
-                favCat = extras.get(IFAVKEY) as Cat
-                mAdapter.setFav(favCat!!)
-            }
+        val gson = Gson()
+        if (jsonFavCat != "") {
+
+            favCat = gson.fromJson(jsonFavCat, Cat::class.java)
         }
+
+        if (jsonCatLists != "") {
+            Log.i(TAG, "Successfully found shared cats")
+            val type = object : TypeToken<List<Cat>>() {}.type
+            cats = gson.fromJson(jsonCatLists, type)
+
+        } else {
+            Log.i(TAG, "Cat house did not receive any cats from shared prefs")
+        }
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+
+//        if (extras != null) {
+//            cats = extras.get(ICATKEY) as ArrayList<Cat>
+//            if(extras.get(IFAVKEY) != null) {
+//                favCat = extras.get(IFAVKEY) as Cat
+//                mAdapter.setFav(favCat!!)
+//            }
+//        }
 
         var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
         var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
@@ -86,20 +108,6 @@ class CatHouseActivity : Activity() {
 
     }
 
-
-    // when you press back in this view, you should return to main activity so, we need to send
-    // a result intent that should be handled by onActivityResult() in main activity. Once again,
-    // this is to maintain consistency between main activity and CatHouseActivity
-    override fun onBackPressed() {
-        val intent = Intent(applicationContext, MainActivity :: class.java)
-        val list = mAdapter.getList()
-        intent.putExtra(ICATKEY, list)
-        if(favCat != null && list.contains(favCat!!)) {
-            intent.putExtra(IFAVKEY, favCat)
-        }
-        setResult(RESULT_OK, intent)
-        super.onBackPressed()
-
     // Grants or denies permission to allow share functionality. If request is denied then
     // share won't work
     override fun onRequestPermissionsResult(
@@ -114,6 +122,7 @@ class CatHouseActivity : Activity() {
                 } else {
                     Toast.makeText(applicationContext, "READ PERMISSION DENIED", Toast.LENGTH_LONG).show()
                 }
+
         }
     }
 
@@ -177,12 +186,9 @@ class CatHouseActivity : Activity() {
         }
     }
 
-
-
-
     //same thing as MainActivity's onPause method, look there
     override fun onPause() {
-        val sharedPreferences = getSharedPreferences(SPTITLE, MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
         val sharePEditor = sharedPreferences.edit()
 
         val gson = Gson()
@@ -196,42 +202,91 @@ class CatHouseActivity : Activity() {
         sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
         sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
 
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        val list = mAdapter.getList()
-        intent.putExtra(ICATKEY, list)
-        if(favCat != null && list.contains(favCat)) {
-            intent.putExtra(IFAVKEY, favCat)
-        }
-        setResult(RESULT_OK, intent)
-
         super.onPause()
+    }
+
+    override fun onStop() {
+        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
+        val sharePEditor = sharedPreferences.edit()
+
+        val gson = Gson()
+        val catList = mAdapter.getList()
+        for(cat in catList) {
+            cat.markedForDelete(false)
+        }
+        val jsonCatLists = gson.toJson(catList)
+        favCat = mAdapter.getFav()
+        val jsonFavCat = gson.toJson(favCat)
+        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
+        super.onStop()
     }
 
     // when you press back in this view, you should return to main activity so, we need to send
     // a result intent that should be handled by onActivityResult() in main activity. Once again,
     // this is to maintain consistency between main activity and CatHouseActivity
     override fun onBackPressed() {
-        val intent = Intent(applicationContext, MainActivity::class.java)
         val catList = mAdapter.getList()
         for(cat in catList) {
             cat.markedForDelete(false)
         }
         mAdapter.clearDeleteList()
-        intent.putExtra(ICATKEY, catList)
-        favCat = mAdapter.getFav()
 
-        if(favCat != null && catList.contains(favCat)) {
-            intent.putExtra(IFAVKEY, favCat)
-        }
-        setResult(RESULT_OK, intent)
         super.onBackPressed()
+
+    }
+
+    inner class SharedPreferencesListener : SharedPreferences.OnSharedPreferenceChangeListener {
+        override fun onSharedPreferenceChanged(
+            sharedPreferences: SharedPreferences?,
+            key: String?
+        ) {
+            if(key == MainActivity.SPCATKEY){
+                //Get updated cat list
+                Log.i(TAG, "Found new cat in Shared Preferences")
+                val jsonCatLists = sharedPreferences!!.getString(MainActivity.SPCATKEY, "")
+                val jsonFavCat = sharedPreferences.getString(MainActivity.SPFAVKEY, "")
+
+                val gson = Gson()
+                if (jsonFavCat != "") {
+
+                    favCat = gson.fromJson(jsonFavCat, Cat::class.java)
+                }
+
+                var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
+                var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
+
+                if(cats.isEmpty()) {
+                    noCatsTitleView.text = "No Cats"
+
+                    noCatsTitleView.textSize = 40F
+                    noCatsImage.setBackgroundResource(R.drawable.ic_cat)
+                } else {
+                    noCatsTitleView.text = null
+                    noCatsImage.background = null
+                }
+
+                if (jsonCatLists != "") {
+                    Log.i(TAG, "Cat List is not empty - loading cats")
+                    val type = object : TypeToken<List<Cat>>() {}.type
+                    cats = gson.fromJson(jsonCatLists, type)
+                    if(cats.size > catListSize)
+                        mAdapter.add(cats[cats.size-1])
+                    catListSize = cats.size
+                } else {
+                    Log.i(TAG, "Cat List is empty :(")
+                }
+
+                mAdapter.notifyDataSetChanged()
+            }
+        }
 
     }
 
 
 
     companion object {
-        const val SPTITLE = "catTitle"
+        const val TAG = "CatHouseActivity"
+        const val SPCount = "countPrefs"
         const val SPCATKEY = "catListsSP"
         const val SPFAVKEY = "favoriteSP"
         const val ICATKEY = "catListsIntent"
