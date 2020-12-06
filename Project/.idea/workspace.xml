@@ -30,7 +30,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_3_API_29" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[Pixel_3_API_29]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -58,12 +58,11 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../labs/Lab11_LocationLab" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../MyApplication2" />
     <property name="project.structure.last.edited" value="Dependencies" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -78,12 +77,13 @@
       </method>
     </configuration>
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
-      <module name="app" />
+      <module name="Cat_Game.app" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />
       <option name="ARTIFACT_NAME" value="" />
       <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
       <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
       <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
@@ -119,11 +119,16 @@
       </Native>
       <Profilers>
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
         <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
         <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
       </Profilers>
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
       <method v="2">
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
@@ -156,25 +161,29 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="765" y="229" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040/-1366.163.1366.728@0.0.1920.1040" timestamp="1606674319136" />
-    <state x="758" y="275" key="FileChooserDialogImpl" timestamp="1606069357076">
+    <state x="758" y="275" key="FileChooserDialogImpl" timestamp="1607188591115">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="758" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1366.163.1366.728@0.0.1920.1040" timestamp="1606069357076" />
-    <state width="1877" height="254" key="GridCell.Tab.0.bottom" timestamp="1606676446366">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="758" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1366.163.1366.728@0.0.1920.1040" timestamp="1607188591115" />
+    <state width="661" height="111" key="GridCell.Tab.0.bottom" timestamp="1607189568302">
+      <screen x="-1366" y="163" width="1366" height="728" />
     </state>
+    <state width="661" height="111" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1366.163.1366.728@-1366.163.1366.728" timestamp="1607189568302" />
     <state width="1877" height="254" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1366.163.1366.728@0.0.1920.1040" timestamp="1606676446366" />
-    <state width="1877" height="254" key="GridCell.Tab.0.center" timestamp="1606676446365">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="661" height="111" key="GridCell.Tab.0.center" timestamp="1607189568302">
+      <screen x="-1366" y="163" width="1366" height="728" />
     </state>
+    <state width="661" height="111" key="GridCell.Tab.0.center/0.0.1920.1040/-1366.163.1366.728@-1366.163.1366.728" timestamp="1607189568302" />
     <state width="1877" height="254" key="GridCell.Tab.0.center/0.0.1920.1040/-1366.163.1366.728@0.0.1920.1040" timestamp="1606676446365" />
-    <state width="1877" height="254" key="GridCell.Tab.0.left" timestamp="1606676446365">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="661" height="111" key="GridCell.Tab.0.left" timestamp="1607189568301">
+      <screen x="-1366" y="163" width="1366" height="728" />
     </state>
+    <state width="661" height="111" key="GridCell.Tab.0.left/0.0.1920.1040/-1366.163.1366.728@-1366.163.1366.728" timestamp="1607189568301" />
     <state width="1877" height="254" key="GridCell.Tab.0.left/0.0.1920.1040/-1366.163.1366.728@0.0.1920.1040" timestamp="1606676446365" />
-    <state width="1877" height="254" key="GridCell.Tab.0.right" timestamp="1606676446366">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="661" height="111" key="GridCell.Tab.0.right" timestamp="1607189568302">
+      <screen x="-1366" y="163" width="1366" height="728" />
     </state>
+    <state width="661" height="111" key="GridCell.Tab.0.right/0.0.1920.1040/-1366.163.1366.728@-1366.163.1366.728" timestamp="1607189568302" />
     <state width="1877" height="254" key="GridCell.Tab.0.right/0.0.1920.1040/-1366.163.1366.728@0.0.1920.1040" timestamp="1606676446366" />
     <state x="461" y="162" key="SettingsEditor" timestamp="1605116756029">
       <screen x="0" y="0" width="1920" height="1040" />
