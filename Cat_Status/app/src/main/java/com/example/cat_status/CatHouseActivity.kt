@@ -74,6 +74,7 @@ class CatHouseActivity : Activity() {
 
         val noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
         val noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
+
         // store the cats into a local variable. If the user has no cats, we instead inflate
         // an icon and text no cats
         if(cats.isEmpty()) {

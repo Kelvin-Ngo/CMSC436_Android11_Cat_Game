@@ -164,11 +164,13 @@ class MainActivity : AppCompatActivity() {
         // when this button is pressed, the cat house activity is created. We need the
         // list of cats and the favorite cat if there's any in order to keep the two views
         // (the main activity view and the CatHouseActivity view) consistent
-        catHouseButton.setOnClickListener {
-            val intent = Intent(applicationContext, CatHouseActivity::class.java)
-            // we put the cats as an extra in the intent when we start up. We will handle
-            // retrieving the data in CatHouseActivity
-            startActivityForResult(intent, 1)
+        catHouseButton.setOnClickListener(
+            View.OnClickListener {
+                val intent = Intent(applicationContext, CatHouseActivity::class.java)
+                // we put the cats as an extra in the intent when we start up. We will handle
+                // retrieving the data in CatHouseActivity
+                startActivityForResult(intent, 1)
+            }
         }
     }
 
@@ -194,10 +196,10 @@ class MainActivity : AppCompatActivity() {
                 favCatNameView.textSize = 17F
 
                 val fileName = "cat_${favCat?.getId()}.png"
-                val file = File(applicationContext.filesDir, fileName)
+                val file = File(applicationContext.filesDir, "$fileName")
                 val bmOptions = BitmapFactory.Options()
 
-                val currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+                var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
 
                 favCatImage.setImageBitmap(currBitmap)
 
@@ -221,7 +223,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     // inflates a view in the main activity with the current favorite cat
     private fun createFavCat(){
