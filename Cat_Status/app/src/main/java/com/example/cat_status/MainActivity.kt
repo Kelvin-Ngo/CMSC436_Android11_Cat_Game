@@ -195,7 +195,7 @@ class MainActivity : AppCompatActivity() {
 
             val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
             favCat = gson.fromJson(jsonFavCat, Cat::class.java)
-            if (jsonFavCat != "") {
+            if (favCat != null) {
                 val favCatNameView = findViewById<TextView>(R.id.favCatName)
 
                 favCatNameView.text = favCat?.getName()
@@ -211,7 +211,20 @@ class MainActivity : AppCompatActivity() {
 
                 favCatImage.scaleX = 3F
                 favCatImage.scaleY = 3F
+
+                if(mediaPlayer == null) {
+                    mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
+                }
+
+                favCatImage.setOnClickListener {
+                    mediaPlayer?.start()
+                }
+
             } else {
+                val favCatNameView = findViewById<TextView>(R.id.favCatName)
+                favCatNameView.text = ""
+                val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+                favCatImage.setImageDrawable(null)
                 favCatImage.setOnClickListener(null)
             }
         }
