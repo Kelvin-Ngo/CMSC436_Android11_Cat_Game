@@ -47,12 +47,12 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
             R.drawable.sym06, R.drawable.sym07, R.drawable.sym08, R.drawable.sym09, R.drawable.sym10)
 
         // setting up color options, if changing amounts of colors be sure to change r3, r4, and r5
-        val black = Color.BLACK
+        val black = Color.argb(1,38,38,38)
         val gray = Color.GRAY
         val white = Color.WHITE
         val brown = Color.argb(1,150, 102, 59)
         val orange = Color.argb(1,255, 150, 56)
-        val yellow = Color.argb(1, 252, 245, 141)
+        val yellow = Color.argb(1, 252, 250, 210)
         val red = Color.RED
         val blue = Color.BLUE
         val green = Color.GREEN
