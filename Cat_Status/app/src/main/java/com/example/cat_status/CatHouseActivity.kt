@@ -249,8 +249,11 @@ class CatHouseActivity : Activity() {
                     Log.i(TAG, "Cat List is not empty - loading cats")
                     val type = object : TypeToken<List<Cat>>() {}.type
                     cats = gson.fromJson(jsonCatLists, type)
+
                     if(cats.size > catListSize && cats.size > 0)
-                        mAdapter.add(cats[cats.size-1])
+                        if(!mAdapter.getList().contains(cats[cats.size - 1])) {
+                            mAdapter.add(cats[cats.size - 1])
+                        }
                     catListSize = cats.size
                 } else {
                     Log.i(TAG, "Cat List is empty :(")
@@ -278,5 +281,6 @@ class CatHouseActivity : Activity() {
         const val SPCount = "countPrefs"
         const val SPMUTEKEY = "isMute"
         const val MAXCHARNAME = 13
+
     }
 }

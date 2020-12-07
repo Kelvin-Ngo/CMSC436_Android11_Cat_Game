@@ -182,6 +182,9 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
+    // we need are the cat lists and the favorite cat. This is so that any changes made in the
+    // CatHouseAtivity view is reflected in the main activity
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -284,7 +287,6 @@ class MainActivity : AppCompatActivity() {
         val timeToNotify = min(mTimeLeftInMillisFood,mTimeLeftInMillisWater)
 
         mAlarmManager.set(AlarmManager.RTC_WAKEUP, timeCurrent + timeToNotify, pendingIntent)
-        Toast.makeText(this, "Alarm Set", Toast.LENGTH_LONG).show()
         super.onStop()
     }
 
@@ -364,59 +366,6 @@ class MainActivity : AppCompatActivity() {
         }
         super.onStart()
     }
-
-    // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
-    // we need are the cat lists and the favorite cat. This is so that any changes made in the
-    // CatHouseAtivity view is reflected in the main activity
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if(requestCode == 1) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                val extras = data?.extras
-//                catLists = extras?.get(ICATKEY) as ArrayList<Cat>
-//                if(extras.get(IFAVKEY) != null) {
-//
-//                    favCat = data?.extras?.get(IFAVKEY) as Cat
-//                    if (favCat != null) {
-//                        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
-//                        val favCatNameView = findViewById<TextView>(R.id.favCatName)
-//
-//                        favCatNameView.text = favCat?.getName()
-//                        favCatNameView.textSize = 17F
-//
-//                        val fileName = "cat_${favCat?.getId()}.png"
-//                        val file = File(applicationContext.filesDir, "$fileName")
-//                        val bmOptions = BitmapFactory.Options()
-//
-//                        var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
-//
-//                        favCatImage.setImageBitmap(currBitmap)
-//
-//                        favCatImage.scaleX = 3F
-//                        favCatImage.scaleY = 3F
-//
-//                        if(mediaPlayer == null) {
-//                            mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
-//                        }
-//
-//                        favCatImage.setOnClickListener {
-//                            mediaPlayer?.start()
-//                        }
-//
-//                    }
-//                } else {
-//                    favCat = null
-//
-//                    val favCatNameView = findViewById<TextView>(R.id.favCatName)
-//                    favCatNameView.text = ""
-//                    val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
-//                    favCatImage.setImageDrawable(null)
-//                    favCatImage.setOnClickListener(null)
-//                }
-//
-//            }
-//        }
-//    }
 
     inner class SharedPreferencesListener : SharedPreferences.OnSharedPreferenceChangeListener {
         override fun onSharedPreferenceChanged(

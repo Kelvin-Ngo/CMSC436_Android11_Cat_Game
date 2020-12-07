@@ -423,8 +423,8 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
         val gson = Gson()
         val jsonCatLists = gson.toJson(mItems)
         val jsonFavCat = gson.toJson(favCat)
-        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
-        sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
+        sharePEditor.putString(SPFAVKEY, jsonFavCat).commit()
+        sharePEditor.putString(SPCATKEY, jsonCatLists).commit()
     }
 
     internal class ViewHolder: Serializable{
