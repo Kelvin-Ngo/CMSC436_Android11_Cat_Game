@@ -3,4 +3,7 @@
     <string name="new_cat_message">A new cat has appeared!</string>
     <string name="channel_name">Notification Channel</string>
     <string name="channel_desc">Displays notification when new cat appears</string>
+    <string name="toyStatusTime">Efficiency Up: %s</string>
+    <string name="toyStatusEmpty">Your cats want to play with you!</string>
+    <string name="catHouseEmpty">No Cats</string>
 </resources>

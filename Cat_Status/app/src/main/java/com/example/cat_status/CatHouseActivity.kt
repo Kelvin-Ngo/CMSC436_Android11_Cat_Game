@@ -1,23 +1,15 @@
 package com.example.cat_status
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.bluetooth.BluetoothClass
 import android.content.*
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
-import android.text.InputFilter
-import android.text.InputFilter.LengthFilter
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
-import androidx.work.Operation
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.File
 
 
 // referenced Lab 4:UI Lab for implementation
@@ -45,7 +37,7 @@ class CatHouseActivity : Activity() {
         setContentView(R.layout.cathouse_view)
 
         //customizing layout
-        var pictureHolder = findViewById<GridView>(R.id.gridView)
+        val pictureHolder = findViewById<GridView>(R.id.gridView)
         pictureHolder.adapter = mAdapter
         pictureHolder.numColumns = 2
         pictureHolder.verticalSpacing = 20
@@ -80,12 +72,12 @@ class CatHouseActivity : Activity() {
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
 
-        var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
-        var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
+        val noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
+        val noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
         // store the cats into a local variable. If the user has no cats, we instead inflate
         // an icon and text no cats
         if(cats.isEmpty()) {
-            noCatsTitleView.text = "No Cats"
+            noCatsTitleView.text = getString(R.string.catHouseEmpty)
 
             noCatsTitleView.textSize = 40F
             noCatsImage.setBackgroundResource(R.drawable.ic_cat)
@@ -114,11 +106,12 @@ class CatHouseActivity : Activity() {
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         if(requestCode == 1) {
-            if(!grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 if(ActivityCompat.checkSelfPermission(
                         applicationContext,
                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission granted")
                 } else {
                     Toast.makeText(applicationContext, "READ PERMISSION DENIED", Toast.LENGTH_LONG).show()
                 }
@@ -234,8 +227,8 @@ class CatHouseActivity : Activity() {
                     favCat = gson.fromJson(jsonFavCat, Cat::class.java)
                 }
 
-                var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
-                var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
+                val noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
+                val noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
 
                 if (jsonCatLists != "") {
                     Log.i(TAG, "Cat List is not empty - loading cats")
@@ -249,7 +242,7 @@ class CatHouseActivity : Activity() {
                 }
 
                 if(cats.isEmpty()) {
-                    noCatsTitleView.text = "No Cats"
+                    noCatsTitleView.text = getString(R.string.catHouseEmpty)
 
                     noCatsTitleView.textSize = 40F
                     noCatsImage.setBackgroundResource(R.drawable.ic_cat)
