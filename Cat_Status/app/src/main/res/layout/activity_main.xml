@@ -68,9 +68,9 @@
         android:layout_width="190dp"
         android:layout_height="190dp"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="4dp"
         android:progressDrawable="@drawable/circle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/food"
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/fav_catname" />
 
@@ -78,8 +78,8 @@
         android:layout_width="155dp"
         android:layout_height="155dp"
         app:layout_constraintBottom_toBottomOf="@+id/water"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/food"
+        app:layout_constraintEnd_toEndOf="@id/water"
+        app:layout_constraintStart_toStartOf="@+id/water"
         app:layout_constraintTop_toTopOf="@+id/water"
         android:background="@drawable/cat_image_area"
         />
@@ -98,8 +98,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toBottomOf="@+id/water"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/food"
+        app:layout_constraintEnd_toEndOf="@id/water"
+        app:layout_constraintStart_toStartOf="@id/water"
         app:layout_constraintTop_toTopOf="@+id/water" />
 
     <ImageButton

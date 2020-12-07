@@ -54,6 +54,12 @@ class CatHouseActivity : Activity() {
         //get list as it is when this activity is opened
         val jsonCatLists = sharedPreferences.getString(MainActivity.SPCATKEY, "")
         val jsonFavCat = sharedPreferences.getString(MainActivity.SPFAVKEY, "")
+        isMute = sharedPreferences.getBoolean(SPMUTEKEY, false)
+
+        if(isMute) {
+            mAdapter.setIsMute(isMute)
+            mAdapter.notifyDataSetChanged()
+        }
 
         val gson = Gson()
         if (jsonFavCat != "") {
@@ -130,6 +136,8 @@ class CatHouseActivity : Activity() {
 
     //handles creating the icon and creating the functionality of muting
     private fun setUpMuteButton() {
+        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
         val muteButton = findViewById<Button>(R.id.muteButton)
         if(!isMute) {
             muteButton.setBackgroundResource(R.drawable.speaker)
@@ -142,11 +150,12 @@ class CatHouseActivity : Activity() {
                 isMute = true
                 mAdapter.setIsMute(true)
                 muteButton.setBackgroundResource(R.drawable.ic_mute)
+                editor.putBoolean(SPMUTEKEY, isMute).apply()
             } else {
                 isMute = false
                 mAdapter.setIsMute(false)
                 muteButton.setBackgroundResource(R.drawable.speaker)
-
+                editor.putBoolean(SPMUTEKEY, isMute).apply()
             }
             mAdapter.notifyDataSetChanged()
         }
@@ -240,7 +249,7 @@ class CatHouseActivity : Activity() {
                     Log.i(TAG, "Cat List is not empty - loading cats")
                     val type = object : TypeToken<List<Cat>>() {}.type
                     cats = gson.fromJson(jsonCatLists, type)
-                    if(cats.size > catListSize)
+                    if(cats.size > catListSize && cats.size > 0)
                         mAdapter.add(cats[cats.size-1])
                     catListSize = cats.size
                 } else {
@@ -267,8 +276,7 @@ class CatHouseActivity : Activity() {
     companion object {
         const val TAG = "CatHouseActivity"
         const val SPCount = "countPrefs"
-        const val SPCATKEY = "catListsSP"
-        const val SPFAVKEY = "favoriteSP"
+        const val SPMUTEKEY = "isMute"
         const val MAXCHARNAME = 13
     }
 }
