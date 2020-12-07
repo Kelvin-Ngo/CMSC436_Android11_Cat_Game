@@ -66,7 +66,7 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
         return generate(CatID.toString())
     }
 
-    // convert catView to bitmap
+    // convert catView to bitmap, adapted from https://dev.to/pranavpandey/android-create-bitmap-from-a-view-3lck
     private fun viewToBitmap(view: View, width: Int, height: Int, ): Bitmap? {
         val useWidth = (width * Resources.getSystem().displayMetrics.density).toInt()
         val useHeight = (height * Resources.getSystem().displayMetrics.density).toInt()
@@ -79,7 +79,7 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
 
     }
 
-    // convert bitmap from catView to png, file can be found in files app under images
+    // convert bitmap from catView to png, file can be found in files app under images, adapted from https://stackoverflow.com/questions/7769806/convert-bitmap-to-file
     private fun bitmapToPng(bitmap: Bitmap, fileName: String): File? {
         var file: File? = null
         return try {
