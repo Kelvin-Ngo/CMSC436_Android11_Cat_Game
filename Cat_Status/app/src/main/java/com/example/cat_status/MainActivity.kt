@@ -83,9 +83,9 @@ class MainActivity : AppCompatActivity() {
             playing()
         }
 
+
         // inflate catHouseView whenever the button is clicked
         val catHouseButton = findViewById<ImageButton>(R.id.catHouseButton)
-        catHouseButton.setImageResource(R.drawable.house)
         //Set up foodbar and food image
         foodbar = findViewById<ProgressBar>(R.id.food)
         foodbar.setOnClickListener(View.OnClickListener {
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         waterImage.setImageResource(R.drawable.water)
 
         toyStatu = findViewById<TextView>(R.id.toyStatu)
-        toyStatu.setText("Your Cat Wants to Play!")
+        toyStatu.text = "Your Cat Wants to Play!"
 
         eating()
         drinking()
@@ -126,11 +126,8 @@ class MainActivity : AppCompatActivity() {
         val toyButton = findViewById<ImageView>(R.id.toy)
         toyButton.setImageResource(R.drawable.toy)
         toyButton.setOnClickListener(View.OnClickListener {
-            mTimeLeftInMillisToy += 60000
-            if(isPlaying){
-                mCountDownTimerToy.cancel()
-            }
-            playing()
+            isPlaying = true
+            play()
         })
 
         // catLists stores the cats the current user owns. We'll be using this data later
@@ -157,7 +154,6 @@ class MainActivity : AppCompatActivity() {
 
         val gson = Gson()
         if (jsonFavCat != "") {
-
             favCat = gson.fromJson(jsonFavCat, Cat::class.java)
         }
 
@@ -180,10 +176,57 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(applicationContext, CatHouseActivity::class.java)
                 // we put the cats as an extra in the intent when we start up. We will handle
                 // retrieving the data in CatHouseActivity
-                startActivity(intent)
+                startActivityForResult(intent, 1)
             }
         )
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == 1 && resultCode == RESULT_OK) {
+            val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
+            val jsonFavCat = countPrefs.getString(SPFAVKEY, "")
+
+            val gson = Gson()
+
+            val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+            favCat = gson.fromJson(jsonFavCat, Cat::class.java)
+            if (favCat != null) {
+                val favCatNameView = findViewById<TextView>(R.id.favCatName)
+
+                favCatNameView.text = favCat?.getName()
+                favCatNameView.textSize = 17F
+
+                val fileName = "cat_${favCat?.getId()}.png"
+                val file = File(applicationContext.filesDir, "$fileName")
+                val bmOptions = BitmapFactory.Options()
+
+                var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+
+                favCatImage.setImageBitmap(currBitmap)
+
+                favCatImage.scaleX = 3F
+                favCatImage.scaleY = 3F
+
+                if(mediaPlayer == null) {
+                    mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
+                }
+
+                favCatImage.setOnClickListener {
+                    mediaPlayer?.start()
+                }
+
+            } else {
+                val favCatNameView = findViewById<TextView>(R.id.favCatName)
+                favCatNameView.text = ""
+                val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
+                favCatImage.setImageDrawable(null)
+                favCatImage.setOnClickListener(null)
+            }
+        }
+    }
+
 
     // inflates a view in the main activity with the current favorite cat
     private fun createFavCat(){
@@ -250,6 +293,7 @@ class MainActivity : AppCompatActivity() {
     // Gson and Json
     override fun onPause() {
         //Same as above, save data to shared preference
+
         val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
         val editor = countPrefs.edit()
         editor.putLong("LeavingTime", System.currentTimeMillis())
@@ -294,9 +338,6 @@ class MainActivity : AppCompatActivity() {
             mTimeLeftInMillisToy = 0
             isPlaying = false
         }
-        if(isPlaying){
-            playing()
-        }
 
         super.onResume()
     }
@@ -320,9 +361,6 @@ class MainActivity : AppCompatActivity() {
             mTimeLeftInMillisToy = 0
             isPlaying = false
         }
-        if(isPlaying){
-            playing()
-        }
         super.onStart()
     }
 
@@ -334,14 +372,14 @@ class MainActivity : AppCompatActivity() {
             if(key == SPCATKEY){
                 Log.i(TAG, "Found new cat in Shared Preferences")
                 val jsonCatLists = sharedPreferences!!.getString(SPCATKEY, "")
-                val jsonFavCat = sharedPreferences.getString(SPFAVKEY, "")
+                // val jsonFavCat = sharedPreferences.getString(SPFAVKEY, "")
                 uniqueCatID = sharedPreferences.getInt(UNIQUEID, 0)
 
                 val gson = Gson()
-                if (jsonFavCat != "") {
-
-                    favCat = gson.fromJson(jsonFavCat, Cat::class.java)
-                }
+//                if (jsonFavCat != "") {
+//
+//                    favCat = gson.fromJson(jsonFavCat, Cat::class.java)
+//                }
 
                 if (jsonCatLists != "") {
                     Log.i(TAG, "Cat List is not empty - loading cats")
@@ -411,8 +449,6 @@ class MainActivity : AppCompatActivity() {
     //cats will play with toy
     //each click will increment playing time for 1 minute
     private fun playing(){
-        isPlaying = true
-
         mCountDownTimerToy = object : CountDownTimer(mTimeLeftInMillisToy, DefaultRate) {
             override fun onTick(millisUntilFinished: Long) {
 
@@ -444,7 +480,7 @@ class MainActivity : AppCompatActivity() {
             override fun onFinish(){
                 isPlaying = false
 
-                toyStatu.setText("Your cats want to play with you! New Cat Generation Efficiency Reduced!")
+                toyStatu.setText("Your cats want to play with you!")
 
                 val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
                 val editor = countPrefs.edit()
@@ -466,6 +502,12 @@ class MainActivity : AppCompatActivity() {
         mCountDownTimerWater.cancel()
         mTimeLeftInMillisWater = DefaultProgressTime
         drinking()
+    }
+
+    private fun play(){
+        mCountDownTimerToy.cancel()
+        mTimeLeftInMillisToy = mTimeLeftInMillisToy + 60000
+        playing()
     }
 
     fun hasFoodAndWater(): Boolean {

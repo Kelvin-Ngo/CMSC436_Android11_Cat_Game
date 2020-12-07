@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.work.Operation
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -40,7 +41,6 @@ class CatHouseActivity : Activity() {
         val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
 
         // retrieve the cats from the intent that was sent
-        val extras = intent.extras
         mAdapter = catAdapter(applicationContext)
         setContentView(R.layout.cathouse_view)
 
@@ -52,13 +52,21 @@ class CatHouseActivity : Activity() {
         pictureHolder.horizontalSpacing = 20
 
         //get list as it is when this activity is opened
-        val jsonCatLists = sharedPreferences!!.getString(MainActivity.SPCATKEY, "")
+        val jsonCatLists = sharedPreferences.getString(MainActivity.SPCATKEY, "")
         val jsonFavCat = sharedPreferences.getString(MainActivity.SPFAVKEY, "")
+        isMute = sharedPreferences.getBoolean(SPMUTEKEY, false)
+
+        if(isMute) {
+            mAdapter.setIsMute(isMute)
+            mAdapter.notifyDataSetChanged()
+        }
 
         val gson = Gson()
         if (jsonFavCat != "") {
-
             favCat = gson.fromJson(jsonFavCat, Cat::class.java)
+            if (favCat != null) {
+                Log.i("HELLO", "HELLO2")
+            }
         }
 
         if (jsonCatLists != "") {
@@ -120,6 +128,8 @@ class CatHouseActivity : Activity() {
 
     //handles creating the icon and creating the functionality of muting
     private fun setUpMuteButton() {
+        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
         val muteButton = findViewById<Button>(R.id.muteButton)
         if(!isMute) {
             muteButton.setBackgroundResource(R.drawable.speaker)
@@ -132,11 +142,12 @@ class CatHouseActivity : Activity() {
                 isMute = true
                 mAdapter.setIsMute(true)
                 muteButton.setBackgroundResource(R.drawable.ic_mute)
+                editor.putBoolean(SPMUTEKEY, isMute).apply()
             } else {
                 isMute = false
                 mAdapter.setIsMute(false)
                 muteButton.setBackgroundResource(R.drawable.speaker)
-
+                editor.putBoolean(SPMUTEKEY, isMute).apply()
             }
             mAdapter.notifyDataSetChanged()
         }
@@ -180,36 +191,17 @@ class CatHouseActivity : Activity() {
 
     //same thing as MainActivity's onPause method, look there
     override fun onPause() {
-        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
-        val sharePEditor = sharedPreferences.edit()
-
-        val gson = Gson()
         val catList = mAdapter.getList()
         for(cat in catList) {
             cat.markedForDelete(false)
         }
-        val jsonCatLists = gson.toJson(catList)
         favCat = mAdapter.getFav()
-        val jsonFavCat = gson.toJson(favCat)
-        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
-        sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
-
+        setResult(RESULT_OK)
         super.onPause()
     }
 
     override fun onStop() {
-        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
-        val sharePEditor = sharedPreferences.edit()
-
-        val gson = Gson()
-        val catList = mAdapter.getList()
-        for(cat in catList) {
-            cat.markedForDelete(false)
-        }
-        val jsonCatLists = gson.toJson(catList)
-        favCat = mAdapter.getFav()
-        val jsonFavCat = gson.toJson(favCat)
-        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
+        setResult(RESULT_OK)
         super.onStop()
     }
 
@@ -222,7 +214,7 @@ class CatHouseActivity : Activity() {
             cat.markedForDelete(false)
         }
         mAdapter.clearDeleteList()
-
+        setResult(RESULT_OK)
         super.onBackPressed()
 
     }
@@ -234,18 +226,27 @@ class CatHouseActivity : Activity() {
         ) {
             if(key == MainActivity.SPCATKEY){
                 //Get updated cat list
-                Log.i(TAG, "Found new cat in Shared Preferences")
                 val jsonCatLists = sharedPreferences!!.getString(MainActivity.SPCATKEY, "")
                 val jsonFavCat = sharedPreferences.getString(MainActivity.SPFAVKEY, "")
 
                 val gson = Gson()
                 if (jsonFavCat != "") {
-
                     favCat = gson.fromJson(jsonFavCat, Cat::class.java)
                 }
 
                 var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
                 var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
+
+                if (jsonCatLists != "") {
+                    Log.i(TAG, "Cat List is not empty - loading cats")
+                    val type = object : TypeToken<List<Cat>>() {}.type
+                    cats = gson.fromJson(jsonCatLists, type)
+                    if(cats.size > catListSize && cats.size > 0)
+                        mAdapter.add(cats[cats.size-1])
+                    catListSize = cats.size
+                } else {
+                    Log.i(TAG, "Cat List is empty :(")
+                }
 
                 if(cats.isEmpty()) {
                     noCatsTitleView.text = "No Cats"
@@ -256,18 +257,6 @@ class CatHouseActivity : Activity() {
                     noCatsTitleView.text = null
                     noCatsImage.background = null
                 }
-
-                if (jsonCatLists != "") {
-                    Log.i(TAG, "Cat List is not empty - loading cats")
-                    val type = object : TypeToken<List<Cat>>() {}.type
-                    cats = gson.fromJson(jsonCatLists, type)
-                    if(cats.size > catListSize)
-                        mAdapter.add(cats[cats.size-1])
-                    catListSize = cats.size
-                } else {
-                    Log.i(TAG, "Cat List is empty :(")
-                }
-
                 mAdapter.notifyDataSetChanged()
             }
         }
@@ -279,10 +268,7 @@ class CatHouseActivity : Activity() {
     companion object {
         const val TAG = "CatHouseActivity"
         const val SPCount = "countPrefs"
-        const val SPCATKEY = "catListsSP"
-        const val SPFAVKEY = "favoriteSP"
-        const val ICATKEY = "catListsIntent"
-        const val IFAVKEY = "favoriteIntent"
+        const val SPMUTEKEY = "isMute"
         const val MAXCHARNAME = 13
     }
 }
