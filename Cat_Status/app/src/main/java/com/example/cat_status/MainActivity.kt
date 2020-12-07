@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
             playing()
         }
 
+
         // inflate catHouseView whenever the button is clicked
         val catHouseButton = findViewById<ImageButton>(R.id.catHouseButton)
         //Set up foodbar and food image
@@ -126,11 +127,8 @@ class MainActivity : AppCompatActivity() {
         val toyButton = findViewById<ImageView>(R.id.toy)
         toyButton.setImageResource(R.drawable.toy)
         toyButton.setOnClickListener(View.OnClickListener {
-            mTimeLeftInMillisToy += 60000
-            if(isPlaying){
-                mCountDownTimerToy.cancel()
-            }
-            playing()
+            isPlaying = true
+            play()
         })
 
         // catLists stores the cats the current user owns. We'll be using this data later
@@ -296,6 +294,7 @@ class MainActivity : AppCompatActivity() {
     // Gson and Json
     override fun onPause() {
         //Same as above, save data to shared preference
+
         val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
         val editor = countPrefs.edit()
         editor.putLong("LeavingTime", System.currentTimeMillis())
@@ -340,9 +339,6 @@ class MainActivity : AppCompatActivity() {
             mTimeLeftInMillisToy = 0
             isPlaying = false
         }
-        if(isPlaying){
-            playing()
-        }
 
         super.onResume()
     }
@@ -365,9 +361,6 @@ class MainActivity : AppCompatActivity() {
         if(mTimeLeftInMillisToy < 0){
             mTimeLeftInMillisToy = 0
             isPlaying = false
-        }
-        if(isPlaying){
-            playing()
         }
         super.onStart()
     }
@@ -510,8 +503,6 @@ class MainActivity : AppCompatActivity() {
     //cats will play with toy
     //each click will increment playing time for 1 minute
     private fun playing(){
-        isPlaying = true
-
         mCountDownTimerToy = object : CountDownTimer(mTimeLeftInMillisToy, DefaultRate) {
             override fun onTick(millisUntilFinished: Long) {
 
@@ -567,6 +558,12 @@ class MainActivity : AppCompatActivity() {
         drinking()
     }
 
+    private fun play(){
+        mCountDownTimerToy.cancel()
+        mTimeLeftInMillisToy = mTimeLeftInMillisToy + 60000
+        playing()
+    }
+
     fun hasFoodAndWater(): Boolean {
         return mTimeLeftInMillisFood > 1000 && mTimeLeftInMillisWater > 1000
     }
@@ -594,33 +591,7 @@ class MainActivity : AppCompatActivity() {
             mNotificationManager.createNotificationChannel(mChannel)
         }
     }
-    /*
-    public fun sendOnChannel1(statu: String){
-        val title = statu
-        var message = ""
-        if(statu == "LowFood"){
-            message = "Your Food is Low, please come back and refill food for your cat!"
-        }
-        else if(statu == "LowWater"){
-            message = "Your Water is Low, please come back and refill water for your cat!"
-        }
-        else if(statu == "NoFood"){
-            message = "You are out of Food, no new cat will be find until you refill food for your cat!"
-        }
-        else{
-            message = "You are out of Water, no new cat will be find until you refill water for your cat!"
-        }
-        createNoitificationChannels()
-        val notification = NotificationCompat.Builder(this, channelID1)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .build()
-        mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        createNoitificationChannels()
-        mNotificationManager.notify(1, notification)
-    }*/
+
 
     companion object {
         private const val TAG = "MainActivity"
