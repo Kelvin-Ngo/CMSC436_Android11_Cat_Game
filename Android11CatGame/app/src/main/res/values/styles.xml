@@ -1,0 +1,15 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#CD3D3D</item>
+        <item name="colorPrimaryDark">#932929</item>
+        <item name="colorAccent">#FF7D7D</item>
+    </style>
+
+    <style name="menuTheme" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:itemBackground">@drawable/fav_catname</item>
+    </style>
+
+</resources>

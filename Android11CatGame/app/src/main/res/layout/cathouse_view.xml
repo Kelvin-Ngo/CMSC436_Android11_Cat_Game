@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAA255">
+
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="3dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/footer"
+        android:background="@drawable/ic_cross"
+        android:visibility="gone"
+
+
+        />
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/footer"
+        android:layout_marginLeft="3dp"
+        android:layout_marginBottom="3dp"
+        android:background="@drawable/ic_check"
+        android:visibility="gone"
+        />
+
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="53dp"
+        android:layout_marginBottom="33dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="3dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/footer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        />
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:layout_marginBottom="1dp"
+        android:background="@drawable/fav_catname"
+        android:gravity="center"
+        android:text="Cat Collection"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="@drawable/fav_catname"
+        android:gravity="center"
+
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/trashButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/footer"
+        app:layout_constraintTop_toTopOf="@id/footer"
+        app:layout_constraintRight_toRightOf="@id/footer"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/ic_trash"
+        />
+
+    <Button
+        android:id="@+id/muteButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/footer"
+        app:layout_constraintTop_toTopOf="@id/footer"
+        app:layout_constraintLeft_toLeftOf="@id/footer"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/ic_mute"
+        />
+
+    <TextView
+        android:id="@+id/noCatsTitle"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@id/noCatsImage"
+        app:layout_constraintTop_toBottomOf="@+id/noCatsImage" />
+
+    <ImageView
+        android:id="@+id/noCatsImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="350dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
