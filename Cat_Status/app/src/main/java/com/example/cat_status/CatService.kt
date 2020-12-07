@@ -80,7 +80,7 @@ class CatService(context: Context, workerParams: WorkerParameters) : Worker(cont
 
                 //TODO - send out a notification if the app isn't in focus
                 var builder = NotificationCompat.Builder(currContext, CHANNEL_ID)
-                    .setSmallIcon(android.R.drawable.btn_star)
+                    .setSmallIcon(R.drawable.ic_baseline_pets_24)
                     .setAutoCancel(true)
                     .setContentTitle(currContext.getString(R.string.app_name))
                     .setContentText(currContext.getString(R.string.new_cat_message))
@@ -98,6 +98,28 @@ class CatService(context: Context, workerParams: WorkerParameters) : Worker(cont
             }
 //        return newCat
         } else {
+            //TODO - Send notification that we're out of food/water
+            var builder = NotificationCompat.Builder(currContext, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_baseline_local_dining_24)
+                .setAutoCancel(true)
+                .setContentTitle(currContext.getString(R.string.app_name))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            when {
+                mPrefs.getLong(SPFOOD, 0) < 1000 -> {
+                    builder.setContentText("Your cats are out of food!")
+                }
+                mPrefs.getLong(SPWATER, 0) < 1000 -> {
+                    builder.setContentText("Your cats are out of water!")
+                }
+                else -> {
+                    builder.setContentText("Your cats are out of food and water!")
+                }
+
+            }
+            with(NotificationManagerCompat.from(currContext)) {
+                notify(notifID, builder.build())
+            }
+            notifID += 1
             Log.i(TAG, "Out of food and water, can't generate cats")
         }
     }

@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private var mTimeLeftInMillisToy:Long = 0
     private var isPlaying = false
 
-    private lateinit var mNotificationManager: NotificationManager
     private val listener = SharedPreferencesListener()
 
 
@@ -327,59 +326,6 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
     }
 
-    // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
-    // we need are the cat lists and the favorite cat. This is so that any changes made in the
-    // CatHouseAtivity view is reflected in the main activity
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if(requestCode == 1) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                val extras = data?.extras
-//                catLists = extras?.get(ICATKEY) as ArrayList<Cat>
-//                if(extras.get(IFAVKEY) != null) {
-//
-//                    favCat = data?.extras?.get(IFAVKEY) as Cat
-//                    if (favCat != null) {
-//                        val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
-//                        val favCatNameView = findViewById<TextView>(R.id.favCatName)
-//
-//                        favCatNameView.text = favCat?.getName()
-//                        favCatNameView.textSize = 17F
-//
-//                        val fileName = "cat_${favCat?.getId()}.png"
-//                        val file = File(applicationContext.filesDir, "$fileName")
-//                        val bmOptions = BitmapFactory.Options()
-//
-//                        var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
-//
-//                        favCatImage.setImageBitmap(currBitmap)
-//
-//                        favCatImage.scaleX = 3F
-//                        favCatImage.scaleY = 3F
-//
-//                        if(mediaPlayer == null) {
-//                            mediaPlayer = MediaPlayer.create(applicationContext, R.raw.cat_meow)
-//                        }
-//
-//                        favCatImage.setOnClickListener {
-//                            mediaPlayer?.start()
-//                        }
-//
-//                    }
-//                } else {
-//                    favCat = null
-//
-//                    val favCatNameView = findViewById<TextView>(R.id.favCatName)
-//                    favCatNameView.text = ""
-//                    val favCatImage = findViewById<ImageView>(R.id.favoriteCatImage)
-//                    favCatImage.setImageDrawable(null)
-//                    favCatImage.setOnClickListener(null)
-//                }
-//
-//            }
-//        }
-//    }
-
     inner class SharedPreferencesListener : SharedPreferences.OnSharedPreferenceChangeListener {
         override fun onSharedPreferenceChanged(
             sharedPreferences: SharedPreferences?,
@@ -549,33 +495,6 @@ class MainActivity : AppCompatActivity() {
             mNotificationManager.createNotificationChannel(mChannel)
         }
     }
-    /*
-    public fun sendOnChannel1(statu: String){
-        val title = statu
-        var message = ""
-        if(statu == "LowFood"){
-            message = "Your Food is Low, please come back and refill food for your cat!"
-        }
-        else if(statu == "LowWater"){
-            message = "Your Water is Low, please come back and refill water for your cat!"
-        }
-        else if(statu == "NoFood"){
-            message = "You are out of Food, no new cat will be find until you refill food for your cat!"
-        }
-        else{
-            message = "You are out of Water, no new cat will be find until you refill water for your cat!"
-        }
-        createNoitificationChannels()
-        val notification = NotificationCompat.Builder(this, channelID1)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .build()
-        mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        createNoitificationChannels()
-        mNotificationManager.notify(1, notification)
-    }*/
 
     companion object {
         private const val TAG = "MainActivity"
@@ -588,8 +507,6 @@ class MainActivity : AppCompatActivity() {
         const val SPWATER = "waterSP"
         const val SPTOY = "toySP"
         const val SPPLAY = "play"
-        const val ICATKEY = "catListsIntent"
-        const val IFAVKEY = "favoriteIntent"
         const val UNIQUEID = "uniqueID"
         const val channelID1 = "cat_channel"
         private const val CHANNEL_ID = "New_Cat_Notif"

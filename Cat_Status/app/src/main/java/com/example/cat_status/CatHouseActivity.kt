@@ -72,14 +72,6 @@ class CatHouseActivity : Activity() {
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
 
-//        if (extras != null) {
-//            cats = extras.get(ICATKEY) as ArrayList<Cat>
-//            if(extras.get(IFAVKEY) != null) {
-//                favCat = extras.get(IFAVKEY) as Cat
-//                mAdapter.setFav(favCat!!)
-//            }
-//        }
-
         var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
         var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
         // store the cats into a local variable. If the user has no cats, we instead inflate
