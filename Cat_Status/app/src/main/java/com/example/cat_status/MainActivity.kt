@@ -164,20 +164,18 @@ class MainActivity : AppCompatActivity() {
         // when this button is pressed, the cat house activity is created. We need the
         // list of cats and the favorite cat if there's any in order to keep the two views
         // (the main activity view and the CatHouseActivity view) consistent
-        catHouseButton.setOnClickListener(
-            View.OnClickListener {
-                val intent = Intent(applicationContext, CatHouseActivity::class.java)
-                // we put the cats as an extra in the intent when we start up. We will handle
-                // retrieving the data in CatHouseActivity
-                startActivityForResult(intent, 1)
-            }
+        catHouseButton.setOnClickListener{
+            val intent = Intent(applicationContext, CatHouseActivity::class.java)
+            // we put the cats as an extra in the intent when we start up. We will handle
+            // retrieving the data in CatHouseActivity
+            startActivityForResult(intent, 1)
         }
     }
 
     // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
-    // we need are the cat lists and the favorite cat. This is so that any changes made in the
-    // CatHouseActivity view is reflected in the main activity
-    //Decoding the files into bitmaps is taken from Isaiah's CatAppearanceGenerator Class
+// we need are the cat lists and the favorite cat. This is so that any changes made in the
+// CatHouseActivity view is reflected in the main activity
+//Decoding the files into bitmaps is taken from Isaiah's CatAppearanceGenerator Class
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -196,10 +194,10 @@ class MainActivity : AppCompatActivity() {
                 favCatNameView.textSize = 17F
 
                 val fileName = "cat_${favCat?.getId()}.png"
-                val file = File(applicationContext.filesDir, "$fileName")
+                val file = File(applicationContext.filesDir, fileName)
                 val bmOptions = BitmapFactory.Options()
 
-                var currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
+                val currBitmap = BitmapFactory.decodeFile(file.absolutePath, bmOptions)
 
                 favCatImage.setImageBitmap(currBitmap)
 
@@ -283,9 +281,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     // when the app is paused, we save the list of cats and the favorite cat inside sharedPreference
-    // so the data won't be destroyed when the app is closed. as sharedPreferences only handles
-    // a select few data types, we have to convert our cat list and favorite cat into a string using
-    // Gson and Json
+// so the data won't be destroyed when the app is closed. as sharedPreferences only handles
+// a select few data types, we have to convert our cat list and favorite cat into a string using
+// Gson and Json
     override fun onPause() {
         //Same as above, save data to shared preference
 
@@ -386,7 +384,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //cats start eating the food
-    //create a count down timer for food bar
+//create a count down timer for food bar
     private fun eating(){
         mCountDownTimerFood = object : CountDownTimer(mTimeLeftInMillisFood, defaultRate) {
             override fun onTick(millisUntilFinished: Long) {
@@ -412,7 +410,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //cats start drinking the water
-    //create a count down timer for water bar
+//create a count down timer for water bar
     private fun drinking(){
         mCountDownTimerWater = object : CountDownTimer(mTimeLeftInMillisWater, defaultRate) {
             override fun onTick(millisUntilFinished: Long) {
@@ -438,7 +436,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //cats will play with toy
-    //each click will increment playing time for 1 minute
+//each click will increment playing time for 1 minute
     private fun playing(){
         mCountDownTimerToy = object : CountDownTimer(mTimeLeftInMillisToy, defaultRate) {
             override fun onTick(millisUntilFinished: Long) {
