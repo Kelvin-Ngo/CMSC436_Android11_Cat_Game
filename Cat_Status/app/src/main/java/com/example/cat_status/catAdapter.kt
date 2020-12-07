@@ -22,7 +22,8 @@ import java.io.File
 import java.io.Serializable
 
 // author: Kelvin Ngo
-// Adaptor class for listView. Code is based off of Lab4: UILabs and AudioVideoAudioManager example
+// Adaptor class for listView. Code is based off of Lab4: UILabs and the
+// AudioVideoAudioManager example
 class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
     private val mItems = ArrayList<Cat>()
     private var mediaPlayer: MediaPlayer? = null
@@ -358,6 +359,9 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
         builder.show()
     }
 
+    // Outside worked cited for getting permission to share user data:
+    // https://developer.android.com/training/sharing/send
+    // https://stackoverflow.com/questions/20333186/how-to-share-image-text-together-using-action-send-in-android
     private fun shareButtonPressed(cat: Cat, rootContext: Context?) {
         val permissions = ActivityCompat.checkSelfPermission(
             mContext,
@@ -375,6 +379,9 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
 
     // Handles sending the Image of the clicked cat. It first needs to retrieve the image and the
     // user will choose how to send it and how to send it to.
+    // Outside worked cited for getting permission to share user data:
+    // https://developer.android.com/training/sharing/send
+    // https://stackoverflow.com/questions/20333186/how-to-share-image-text-together-using-action-send-in-android
     private fun sendImage(cat: Cat) {
         val file =  File(cat.getImageLoc())
 
@@ -423,8 +430,8 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
         val gson = Gson()
         val jsonCatLists = gson.toJson(mItems)
         val jsonFavCat = gson.toJson(favCat)
-        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
-        sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
+        sharePEditor.putString(SPFAVKEY, jsonFavCat).commit()
+        sharePEditor.putString(SPCATKEY, jsonCatLists).commit()
     }
 
     internal class ViewHolder: Serializable{
