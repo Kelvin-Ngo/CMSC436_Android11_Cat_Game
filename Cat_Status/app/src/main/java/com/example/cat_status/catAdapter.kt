@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.text.InputFilter
+import android.text.InputType
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.google.gson.Gson
+import org.w3c.dom.Text
 import java.io.File
 import java.io.Serializable
 
@@ -151,6 +153,13 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
 
     // sets the favorite cat's view as red
     private fun setUpFavCat(view :ViewHolder, currItem: Cat) {
+        val countPrefs = mContext.getSharedPreferences(MainActivity.SPCount, Context.MODE_PRIVATE)
+        val jsonFavCat = countPrefs.getString(MainActivity.SPFAVKEY, "")
+
+        val gson = Gson()
+        if (jsonFavCat != "") {
+            favCat = gson.fromJson(jsonFavCat, Cat::class.java)
+        }
         if (currItem == favCat) {
             view.mItemLayout?.findViewById<ImageView>(R.id.catStatusView)
                 ?.setBackgroundResource(R.drawable.fav_background_cat_status)
@@ -251,8 +260,7 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
         return favCat
     }
 
-    fun setFav(currCat: Cat) {
-
+    private fun setFav(currCat: Cat) {
         if (currCat != favCat) {
             favCat = currCat
             updateList()
@@ -292,12 +300,13 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
     // ok, the method first checks to see if favCat is the current cat getting its name changed.
     // If so it will change the name of favCat and current cat if not, it will just change
     // the current cat's name
-    fun changeName(currCat: Cat, mAdapter: catAdapter, rootContext: Context) {
+    private fun changeName(currCat: Cat, mAdapter: catAdapter, rootContext: Context) {
         val builder = AlertDialog.Builder(rootContext)
         builder.setTitle("New Name (Limit ${CatHouseActivity.MAXCHARNAME} characters):")
 
         val textInput = EditText(rootContext)
         textInput.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(CatHouseActivity.MAXCHARNAME))
+        textInput.inputType = InputType.TYPE_CLASS_TEXT
         builder.setView(textInput)
 
         builder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
@@ -309,6 +318,7 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
                 val newName = textInput.text.toString()
                 currCat.setName(" $newName")
             }
+            updateList()
         })
 
         builder.setNegativeButton("CANCEL", null)
@@ -413,8 +423,8 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
         val gson = Gson()
         val jsonCatLists = gson.toJson(mItems)
         val jsonFavCat = gson.toJson(favCat)
-        sharePEditor.putString(CatHouseActivity.SPFAVKEY, jsonFavCat).apply()
-        sharePEditor.putString(CatHouseActivity.SPCATKEY, jsonCatLists).apply()
+        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
+        sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
     }
 
     internal class ViewHolder: Serializable{
@@ -428,12 +438,8 @@ class catAdapter(private val mContext: Context) : BaseAdapter(), Serializable {
     }
 
     companion object {
-        const val TAG = "CatAdapter"
         const val SPCount = "countPrefs"
         const val SPCATKEY = "catListsSP"
         const val SPFAVKEY = "favoriteSP"
-        const val ICATKEY = "catListsIntent"
-        const val IFAVKEY = "favoriteIntent"
-        const val MAXCHARNAME = 13
     }
 }

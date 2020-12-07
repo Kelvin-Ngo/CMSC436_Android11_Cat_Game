@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.work.Operation
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -40,7 +41,6 @@ class CatHouseActivity : Activity() {
         val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
 
         // retrieve the cats from the intent that was sent
-        val extras = intent.extras
         mAdapter = catAdapter(applicationContext)
         setContentView(R.layout.cathouse_view)
 
@@ -52,13 +52,15 @@ class CatHouseActivity : Activity() {
         pictureHolder.horizontalSpacing = 20
 
         //get list as it is when this activity is opened
-        val jsonCatLists = sharedPreferences!!.getString(MainActivity.SPCATKEY, "")
+        val jsonCatLists = sharedPreferences.getString(MainActivity.SPCATKEY, "")
         val jsonFavCat = sharedPreferences.getString(MainActivity.SPFAVKEY, "")
 
         val gson = Gson()
         if (jsonFavCat != "") {
-
             favCat = gson.fromJson(jsonFavCat, Cat::class.java)
+            if (favCat != null) {
+                Log.i("HELLO", "HELLO2")
+            }
         }
 
         if (jsonCatLists != "") {
@@ -188,36 +190,17 @@ class CatHouseActivity : Activity() {
 
     //same thing as MainActivity's onPause method, look there
     override fun onPause() {
-        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
-        val sharePEditor = sharedPreferences.edit()
-
-        val gson = Gson()
         val catList = mAdapter.getList()
         for(cat in catList) {
             cat.markedForDelete(false)
         }
-        val jsonCatLists = gson.toJson(catList)
         favCat = mAdapter.getFav()
-        val jsonFavCat = gson.toJson(favCat)
-        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
-        sharePEditor.putString(SPCATKEY, jsonCatLists).apply()
-
+        setResult(RESULT_OK)
         super.onPause()
     }
 
     override fun onStop() {
-        val sharedPreferences = getSharedPreferences(SPCount, MODE_PRIVATE)
-        val sharePEditor = sharedPreferences.edit()
-
-        val gson = Gson()
-        val catList = mAdapter.getList()
-        for(cat in catList) {
-            cat.markedForDelete(false)
-        }
-        val jsonCatLists = gson.toJson(catList)
-        favCat = mAdapter.getFav()
-        val jsonFavCat = gson.toJson(favCat)
-        sharePEditor.putString(SPFAVKEY, jsonFavCat).apply()
+        setResult(RESULT_OK)
         super.onStop()
     }
 
@@ -230,7 +213,7 @@ class CatHouseActivity : Activity() {
             cat.markedForDelete(false)
         }
         mAdapter.clearDeleteList()
-
+        setResult(RESULT_OK)
         super.onBackPressed()
 
     }
@@ -242,28 +225,16 @@ class CatHouseActivity : Activity() {
         ) {
             if(key == MainActivity.SPCATKEY){
                 //Get updated cat list
-                Log.i(TAG, "Found new cat in Shared Preferences")
                 val jsonCatLists = sharedPreferences!!.getString(MainActivity.SPCATKEY, "")
                 val jsonFavCat = sharedPreferences.getString(MainActivity.SPFAVKEY, "")
 
                 val gson = Gson()
                 if (jsonFavCat != "") {
-
                     favCat = gson.fromJson(jsonFavCat, Cat::class.java)
                 }
 
                 var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
                 var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
-
-                if(cats.isEmpty()) {
-                    noCatsTitleView.text = "No Cats"
-
-                    noCatsTitleView.textSize = 40F
-                    noCatsImage.setBackgroundResource(R.drawable.ic_cat)
-                } else {
-                    noCatsTitleView.text = null
-                    noCatsImage.background = null
-                }
 
                 if (jsonCatLists != "") {
                     Log.i(TAG, "Cat List is not empty - loading cats")
@@ -276,6 +247,15 @@ class CatHouseActivity : Activity() {
                     Log.i(TAG, "Cat List is empty :(")
                 }
 
+                if(cats.isEmpty()) {
+                    noCatsTitleView.text = "No Cats"
+
+                    noCatsTitleView.textSize = 40F
+                    noCatsImage.setBackgroundResource(R.drawable.ic_cat)
+                } else {
+                    noCatsTitleView.text = null
+                    noCatsImage.background = null
+                }
                 mAdapter.notifyDataSetChanged()
             }
         }
@@ -289,8 +269,6 @@ class CatHouseActivity : Activity() {
         const val SPCount = "countPrefs"
         const val SPCATKEY = "catListsSP"
         const val SPFAVKEY = "favoriteSP"
-        const val ICATKEY = "catListsIntent"
-        const val IFAVKEY = "favoriteIntent"
         const val MAXCHARNAME = 13
     }
 }
