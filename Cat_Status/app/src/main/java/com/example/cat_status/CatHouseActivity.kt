@@ -101,7 +101,10 @@ class CatHouseActivity : Activity() {
     }
 
     // Grants or denies permission to allow share functionality. If request is denied then
-    // share won't work
+    // share won't work.
+    // Outside worked cited for getting permission to share user data:
+    // https://developer.android.com/training/sharing/send
+    // https://stackoverflow.com/questions/20333186/how-to-share-image-text-together-using-action-send-in-android
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
@@ -234,8 +237,11 @@ class CatHouseActivity : Activity() {
                     Log.i(TAG, "Cat List is not empty - loading cats")
                     val type = object : TypeToken<List<Cat>>() {}.type
                     cats = gson.fromJson(jsonCatLists, type)
+
                     if(cats.size > catListSize && cats.size > 0)
-                        mAdapter.add(cats[cats.size-1])
+                        if(!mAdapter.getList().contains(cats[cats.size - 1])) {
+                            mAdapter.add(cats[cats.size - 1])
+                        }
                     catListSize = cats.size
                 } else {
                     Log.i(TAG, "Cat List is empty :(")
@@ -263,5 +269,6 @@ class CatHouseActivity : Activity() {
         const val SPCount = "countPrefs"
         const val SPMUTEKEY = "isMute"
         const val MAXCHARNAME = 13
+
     }
 }

@@ -24,6 +24,10 @@ import kotlin.math.min
 // mainActivity view for our project should be handled by Ji Luo. In that activity field there
 // should be a button that will activate the CatHouse activity. This mainActivity class will
 // simulate that
+
+// Utilizes Lab5: DataManagement and Lab1: Sending intents
+// For audioManager and the media player, utilized example code AudioVideoAudioManager and
+// AudioVideoVideoPlayer
 class MainActivity : AppCompatActivity() {
     private var defaultProgressTime:Long = 60000
     private var defaultRate:Long = 1000
@@ -168,6 +172,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
+    // we need are the cat lists and the favorite cat. This is so that any changes made in the
+    // CatHouseActivity view is reflected in the main activity
+    //Decoding the files into bitmaps is taken from Isaiah's CatAppearanceGenerator Class
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -270,7 +278,6 @@ class MainActivity : AppCompatActivity() {
         val timeToNotify = min(mTimeLeftInMillisFood,mTimeLeftInMillisWater)
 
         mAlarmManager.set(AlarmManager.RTC_WAKEUP, timeCurrent + timeToNotify, pendingIntent)
-        Toast.makeText(this, "Alarm Set", Toast.LENGTH_LONG).show()
         super.onStop()
     }
 
@@ -363,10 +370,6 @@ class MainActivity : AppCompatActivity() {
                 uniqueCatID = sharedPreferences.getInt(UNIQUEID, 0)
 
                 val gson = Gson()
-//                if (jsonFavCat != "") {
-//
-//                    favCat = gson.fromJson(jsonFavCat, Cat::class.java)
-//                }
 
                 if (jsonCatLists != "") {
                     Log.i(TAG, "Cat List is not empty - loading cats")

@@ -3,8 +3,6 @@ package com.example.cat_status
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
-import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -47,12 +45,12 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
             R.drawable.sym06, R.drawable.sym07, R.drawable.sym08, R.drawable.sym09, R.drawable.sym10)
 
         // setting up color options, if changing amounts of colors be sure to change r3, r4, and r5
-        val black = Color.BLACK
+        val black = Color.argb(1,38,38,38)
         val gray = Color.GRAY
         val white = Color.WHITE
         val brown = Color.argb(1,150, 102, 59)
         val orange = Color.argb(1,255, 150, 56)
-        val yellow = Color.argb(1, 252, 245, 141)
+        val yellow = Color.argb(1, 252, 250, 210)
         val red = Color.RED
         val blue = Color.BLUE
         val green = Color.GREEN
@@ -66,7 +64,7 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
         return generate(CatID.toString())
     }
 
-    // convert catView to bitmap
+    // convert catView to bitmap, adapted from https://dev.to/pranavpandey/android-create-bitmap-from-a-view-3lck
     private fun viewToBitmap(view: View, width: Int, height: Int, ): Bitmap? {
         val useWidth = (width * Resources.getSystem().displayMetrics.density).toInt()
         val useHeight = (height * Resources.getSystem().displayMetrics.density).toInt()
@@ -79,7 +77,7 @@ class CatAppearanceGenerator(var resources: Resources, var applicationContext: C
 
     }
 
-    // convert bitmap from catView to png, file can be found in files app under images
+    // convert bitmap from catView to png, file can be found in files app under images, adapted from https://stackoverflow.com/questions/7769806/convert-bitmap-to-file
     private fun bitmapToPng(bitmap: Bitmap, fileName: String): File? {
         var file: File? = null
         return try {
