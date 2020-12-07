@@ -1,23 +1,15 @@
 package com.example.cat_status
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.bluetooth.BluetoothClass
 import android.content.*
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
-import android.text.InputFilter
-import android.text.InputFilter.LengthFilter
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
-import androidx.work.Operation
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.File
 
 
 // referenced Lab 4:UI Lab for implementation
@@ -80,14 +72,6 @@ class CatHouseActivity : Activity() {
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
 
-//        if (extras != null) {
-//            cats = extras.get(ICATKEY) as ArrayList<Cat>
-//            if(extras.get(IFAVKEY) != null) {
-//                favCat = extras.get(IFAVKEY) as Cat
-//                mAdapter.setFav(favCat!!)
-//            }
-//        }
-
         var noCatsTitleView = findViewById<TextView>(R.id.noCatsTitle)
         var noCatsImage = findViewById<ImageView>(R.id.noCatsImage)
         // store the cats into a local variable. If the user has no cats, we instead inflate
@@ -117,7 +101,10 @@ class CatHouseActivity : Activity() {
     }
 
     // Grants or denies permission to allow share functionality. If request is denied then
-    // share won't work
+    // share won't work.
+    // Outside worked cited for getting permission to share user data:
+    // https://developer.android.com/training/sharing/send
+    // https://stackoverflow.com/questions/20333186/how-to-share-image-text-together-using-action-send-in-android
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {

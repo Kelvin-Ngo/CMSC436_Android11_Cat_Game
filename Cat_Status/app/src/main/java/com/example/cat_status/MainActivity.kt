@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
-import android.media.Image
-import android.graphics.Bitmap
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -18,9 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.graphics.scale
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -31,6 +26,10 @@ import kotlin.math.min
 // mainActivity view for our project should be handled by Ji Luo. In that activity field there
 // should be a button that will activate the CatHouse activity. This mainActivity class will
 // simulate that
+
+// Utilizes Lab5: DataManagement and Lab1: Sending intents
+// For audioManager and the media player, utilized example code AudioVideoAudioManager and
+// AudioVideoVideoPlayer
 class MainActivity : AppCompatActivity() {
     private var DefaultProgressTime:Long = 60000
     private var DefaultRate:Long = 1000
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var foodbar: ProgressBar
     private lateinit var waterbar: ProgressBar
-    private lateinit var toyStatu: TextView
+    private lateinit var toyStatus: TextView
     private lateinit var mCountDownTimerFood: CountDownTimer
     private lateinit var mCountDownTimerWater: CountDownTimer
     private lateinit var mCountDownTimerToy: CountDownTimer
@@ -116,8 +115,8 @@ class MainActivity : AppCompatActivity() {
         val waterImage = findViewById<ImageView>(R.id.waterPNG)
         waterImage.setImageResource(R.drawable.water)
 
-        toyStatu = findViewById<TextView>(R.id.toyStatu)
-        toyStatu.text = "Your Cat Wants to Play!"
+        toyStatus = findViewById<TextView>(R.id.toyStatus)
+        toyStatus.text = "Your Cat Wants to Play!"
 
         eating()
         drinking()
@@ -184,7 +183,8 @@ class MainActivity : AppCompatActivity() {
 
     // the intent sent to CatHouseActivity was sent using startActivityForResult(). The results
     // we need are the cat lists and the favorite cat. This is so that any changes made in the
-    // CatHouseAtivity view is reflected in the main activity
+    // CatHouseActivity view is reflected in the main activity
+    //Decoding the files into bitmaps is taken from Isaiah's CatAppearanceGenerator Class
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -471,7 +471,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 val time = "$hour:$mins:$second"
 
-                toyStatu.setText("Efficiency Up: " + time)
+                toyStatus.setText("Efficiency Up: " + time)
 
                 val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
                 val editor = countPrefs.edit()
@@ -483,7 +483,7 @@ class MainActivity : AppCompatActivity() {
             override fun onFinish(){
                 isPlaying = false
 
-                toyStatu.setText("Your cats want to play with you!")
+                toyStatus.setText("Your cats want to play with you!")
 
                 val countPrefs = getSharedPreferences(SPCount, Context.MODE_PRIVATE)
                 val editor = countPrefs.edit()

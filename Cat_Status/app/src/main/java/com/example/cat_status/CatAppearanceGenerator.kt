@@ -3,8 +3,6 @@ package com.example.cat_status
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
-import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
